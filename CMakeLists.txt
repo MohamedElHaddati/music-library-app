@@ -86,6 +86,7 @@ qt_add_qml_module(MusicManager
         qml/AlbumDetail.qml
         qml/PlaylistDetail.qml
         qml/PlayerControls.qml
+        qml/Theme.qml
 )
 
 # Definitions
