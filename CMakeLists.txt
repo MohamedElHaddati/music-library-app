@@ -50,6 +50,9 @@ qt_add_executable(MusicManager
     qml/Main.qml
 )
 
+# Set output name to avoid conflict with QML module directory
+set_target_properties(MusicManager PROPERTIES OUTPUT_NAME "music-manager-app")
+
 # Link libraries
 target_link_libraries(MusicManager PRIVATE
     Qt6::Quick
@@ -92,3 +95,6 @@ qt_add_qml_module(MusicManager
 target_compile_definitions(MusicManager PRIVATE
     $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
 )
+
+# Finalize the target
+qt_finalize_target(MusicManager)
