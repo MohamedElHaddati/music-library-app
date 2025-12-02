@@ -119,13 +119,13 @@ ApplicationWindow {
                         Layout.bottomMargin: 2
                         
                         color: navItemArea.containsMouse ? window.hoverColor : 
-                               (bar.currentIndex === modelData.index ? window.cardColor : "transparent")
+                               (contentStack.currentIndex === modelData.index ? window.cardColor : "transparent")
                         radius: 8
                         
                         Behavior on color { ColorAnimation { duration: 150 } }
                         
-                        border.color: bar.currentIndex === modelData.index ? window.accentColor : "transparent"
-                        border.width: bar.currentIndex === modelData.index ? 2 : 0
+                        border.color: contentStack.currentIndex === modelData.index ? window.accentColor : "transparent"
+                        border.width: contentStack.currentIndex === modelData.index ? 2 : 0
                         
                         RowLayout {
                             anchors.fill: parent
@@ -135,7 +135,7 @@ ApplicationWindow {
                             Text {
                                 text: modelData.icon
                                 font.pixelSize: 20
-                                color: bar.currentIndex === modelData.index ? window.accentColor : "#AAAAAA"
+                                color: contentStack.currentIndex === modelData.index ? window.accentColor : "#AAAAAA"
                                 Layout.preferredWidth: 30
                                 horizontalAlignment: Text.AlignHCenter
                             }
@@ -143,8 +143,8 @@ ApplicationWindow {
                             Label {
                                 text: modelData.text
                                 font.pixelSize: 14
-                                font.bold: bar.currentIndex === modelData.index
-                                color: bar.currentIndex === modelData.index ? "white" : "#CCCCCC"
+                                font.bold: contentStack.currentIndex === modelData.index
+                                color: contentStack.currentIndex === modelData.index ? "white" : "#CCCCCC"
                                 Layout.fillWidth: true
                             }
                         }
@@ -154,7 +154,7 @@ ApplicationWindow {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: bar.currentIndex = modelData.index
+                            onClicked: contentStack.currentIndex = modelData.index
                         }
                     }
                 }
@@ -193,8 +193,8 @@ ApplicationWindow {
                         spacing: 15
                         
                         Label {
-                            text: bar.currentIndex === 0 ? "Songs" : 
-                                  bar.currentIndex === 1 ? "Albums" : "Playlists"
+                            text: contentStack.currentIndex === 0 ? "Songs" : 
+                                  contentStack.currentIndex === 1 ? "Albums" : "Playlists"
                             font.pixelSize: 28
                             font.bold: true
                             color: "white"
@@ -237,16 +237,10 @@ ApplicationWindow {
                     }
                 }
                 
-                // Hidden TabBar (controlled by sidebar)
-                TabBar {
-                    id: bar
-                    visible: false
-                    currentIndex: 0
-                }
-                
                 // Content Area
                 StackLayout {
-                    currentIndex: bar.currentIndex
+                    id: contentStack
+                    currentIndex: 0
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     

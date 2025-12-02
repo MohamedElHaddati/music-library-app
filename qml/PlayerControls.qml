@@ -4,19 +4,22 @@ import QtQuick.Layouts
 import QtMultimedia
 import QtQuick.Effects
 
-Rectangle {
+ToolBar {
     id: root
     height: 100
-    color: "#1A1A1A"
     
     property var currentSong: musicController.getCurrentSong()
     
-    layer.enabled: true
-    layer.effect: MultiEffect {
-        shadowEnabled: true
-        shadowColor: "#60000000"
-        shadowVerticalOffset: -2
-        shadowBlur: 0.5
+    background: Rectangle {
+        color: "#1A1A1A"
+        
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: "#60000000"
+            shadowVerticalOffset: -2
+            shadowBlur: 0.5
+        }
     }
     
     Connections {

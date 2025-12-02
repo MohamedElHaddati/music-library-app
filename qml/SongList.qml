@@ -212,9 +212,6 @@ Item {
                     onClicked: {
                         musicController.playSong(modelData.id)
                     }
-                    onDoubleClicked: {
-                        musicController.playSong(modelData.id)
-                    }
                 }
             }
         }
