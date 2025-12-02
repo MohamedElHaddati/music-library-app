@@ -11,6 +11,7 @@ public:
     std::vector<Song> getAllSongs();
     std::vector<Song> searchSongs(const QString& query);
     bool deleteSong(int id);
+    bool updateSong(const Song& song);
     Song getSong(int id);
 };
 

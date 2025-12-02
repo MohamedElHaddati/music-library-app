@@ -1,54 +1,76 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.Material
 import QtQuick.Layouts
 
 ApplicationWindow {
     id: window
-    width: 800
-    height: 600
+    width: 1024
+    height: 768
     visible: true
-    title: "Music Manager"
+    title: "Music Manager Pro"
+    
+    // Global Dark Theme
+    Material.theme: Material.Dark
+    Material.accent: Material.Teal
 
-    property var currentSong: null
-
-    header: ToolBar {
-        RowLayout {
-            anchors.fill: parent
-            ToolButton { text: "Songs"; onClicked: viewStack.currentIndex = 0 }
-            ToolButton { text: "Albums"; onClicked: viewStack.currentIndex = 1 }
-            ToolButton { text: "Playlists"; onClicked: viewStack.currentIndex = 2 }
-            Item { Layout.fillWidth: true }
-            TextField {
-                id: searchField
-                placeholderText: "Search..."
-                onTextChanged: songList.refresh(text)
-            }
-        }
-    }
-
-    StackLayout {
-        id: viewStack
+    StackView {
+        id: stackView
         anchors.top: parent.top
         anchors.bottom: playerFooter.top
         anchors.left: parent.left
         anchors.right: parent.right
-        currentIndex: 0
+        initialItem: homePage
+    }
 
-        SongList { id: songList }
-        
-        // Simple placeholders for other views
-        Item {
-            Text { text: "Albums View (Not Implemented)"; anchors.centerIn: parent }
-        }
-        Item {
-            Text { text: "Playlists View (Not Implemented)"; anchors.centerIn: parent }
+    Component {
+        id: homePage
+        Page {
+            header: ToolBar {
+                RowLayout {
+                    anchors.fill: parent
+                    Label {
+                        text: "Library"
+                        font.pixelSize: 20
+                        font.bold: true
+                        Layout.leftMargin: 10
+                    }
+                    Item { Layout.fillWidth: true }
+                    TextField {
+                        placeholderText: "Search..."
+                        Layout.preferredWidth: 200
+                        onTextChanged: songList.refresh(text)
+                    }
+                }
+            }
+
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
+                
+                TabBar {
+                    id: bar
+                    width: parent.width
+                    Layout.fillWidth: true
+                    TabButton { text: "Songs" }
+                    TabButton { text: "Albums" }
+                    TabButton { text: "Playlists" }
+                }
+
+                StackLayout {
+                    currentIndex: bar.currentIndex
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    
+                    SongList { id: songList }
+                    AlbumList { id: albumList }
+                    PlaylistList { id: playlistList }
+                }
+            }
         }
     }
 
     footer: PlayerControls {
         id: playerFooter
-        currentSongTitle: currentSong ? currentSong.title : "No Song Selected"
-        currentSongArtist: currentSong ? currentSong.artist : ""
-        source: currentSong ? currentSong.path : ""
     }
 }

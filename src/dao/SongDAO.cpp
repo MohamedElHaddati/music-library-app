@@ -70,6 +70,16 @@ bool SongDAO::deleteSong(int id) {
     return query.exec();
 }
 
+bool SongDAO::updateSong(const Song& song) {
+    QSqlQuery query;
+    query.prepare("UPDATE songs SET title = :title, artist = :artist, album_id = :album_id WHERE id = :id");
+    query.bindValue(":title", song.getTitle());
+    query.bindValue(":artist", song.getArtist());
+    query.bindValue(":album_id", song.getAlbumId() == 0 ? QVariant() : song.getAlbumId());
+    query.bindValue(":id", song.getId());
+    return query.exec();
+}
+
 Song SongDAO::getSong(int id) {
     QSqlQuery query;
     query.prepare("SELECT id, title, artist, file_path, album_id, duration FROM songs WHERE id = :id");

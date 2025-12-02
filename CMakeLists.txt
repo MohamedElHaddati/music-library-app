@@ -81,6 +81,10 @@ qt_add_qml_module(MusicManager
     QML_FILES
         qml/Main.qml
         qml/SongList.qml
+        qml/AlbumList.qml
+        qml/PlaylistList.qml
+        qml/AlbumDetail.qml
+        qml/PlaylistDetail.qml
         qml/PlayerControls.qml
 )
 

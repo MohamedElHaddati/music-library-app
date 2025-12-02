@@ -21,18 +21,41 @@ public:
 
     Q_INVOKABLE void addSong(const QString& path);
     Q_INVOKABLE void deleteSong(int id);
+    Q_INVOKABLE void updateSong(int id, const QString& title, const QString& artist, int albumId);
     
     Q_INVOKABLE void createPlaylist(const QString& name);
+    Q_INVOKABLE void addSongToPlaylist(int playlistId, int songId);
+    Q_INVOKABLE QVariantList getPlaylistSongs(int playlistId);
+
+    Q_INVOKABLE void createAlbum(const QString& title);
+    Q_INVOKABLE QVariantList getAlbumSongs(int albumId);
+    
+    // Playback Queue Logic
+    Q_INVOKABLE void playSong(int songId);
+    Q_INVOKABLE void playAlbum(int albumId);
+    Q_INVOKABLE void playPlaylist(int playlistId);
+    
+    Q_INVOKABLE QVariantMap getCurrentSong() const;
+    Q_INVOKABLE void nextSong();
+    Q_INVOKABLE void previousSong();
+    
+    Q_INVOKABLE void updateAlbum(int id, const QString& title, const QString& coverPath);
 
 signals:
     void songsChanged();
     void albumsChanged();
     void playlistsChanged();
+    void currentSongChanged();
 
 private:
     SongDAO m_songDAO;
     AlbumDAO m_albumDAO;
     PlaylistDAO m_playlistDAO;
+    
+    std::vector<Song> m_queue;
+    int m_queueIndex = -1;
+    
+    void loadQueue(const std::vector<Song>& songs);
 };
 
 #endif // MUSICCONTROLLER_H
