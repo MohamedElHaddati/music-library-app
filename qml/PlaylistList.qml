@@ -177,7 +177,9 @@ Item {
                         }
                         
                         Text {
-                            text: "Playlist" + (modelData.songCount !== undefined ? " • " + modelData.songCount + " songs" : "")
+                            text: modelData.songCount !== undefined 
+                                  ? `Playlist • ${modelData.songCount} songs`
+                                  : "Playlist"
                             font.pixelSize: Theme.fontSizeSmall
                             color: Theme.textSecondary
                         }
