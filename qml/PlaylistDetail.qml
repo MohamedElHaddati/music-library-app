@@ -254,9 +254,9 @@ Page {
                                 }
                             }
                             
-                            // Duration
+                            // Duration (would use modelData.duration if available)
                             Text {
-                                text: "3:45"
+                                text: modelData.duration || "3:45"
                                 font.pixelSize: Theme.fontSizeSmall
                                 color: Theme.textSecondary
                             }

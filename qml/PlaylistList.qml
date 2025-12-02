@@ -177,7 +177,7 @@ Item {
                         }
                         
                         Text {
-                            text: "Playlist • " + (modelData.songCount || 0) + " songs"
+                            text: "Playlist" + (modelData.songCount !== undefined ? " • " + modelData.songCount + " songs" : "")
                             font.pixelSize: Theme.fontSizeSmall
                             color: Theme.textSecondary
                         }
