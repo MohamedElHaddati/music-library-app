@@ -125,6 +125,33 @@ Item {
                             color: AppTheme.textSecondary
                         }
                     }
+                    
+                    // Delete button
+                    Rectangle {
+                        Layout.preferredWidth: 30
+                        Layout.preferredHeight: 30
+                        Layout.alignment: Qt.AlignRight
+                        radius: AppTheme.radiusSmall
+                        color: deleteMouseArea.containsMouse ? AppTheme.error : "transparent"
+                        
+                        Text {
+                            anchors.centerIn: parent
+                            text: "🗑️"
+                            font.pixelSize: 16
+                        }
+                        
+                        MouseArea {
+                            id: deleteMouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                deleteDialog.albumId = modelData.id
+                                deleteDialog.albumTitle = modelData.title
+                                deleteDialog.open()
+                            }
+                        }
+                    }
                 }
                 
                 MouseArea {
@@ -149,6 +176,7 @@ Item {
         id: createAlbumDialog
         title: "Create Album"
         anchors.centerIn: parent
+        width: 350  // Add explicit width
         standardButtons: Dialog.Ok | Dialog.Cancel
         Material.theme: Material.Dark
         
@@ -160,13 +188,13 @@ Item {
         }
         
         ColumnLayout {
+            width: parent.width
             spacing: AppTheme.spacing3
             
             TextField {
                 id: albumTitleField
                 placeholderText: "Album Title"
                 Layout.fillWidth: true
-                Layout.preferredWidth: 300
                 background: Rectangle {
                     color: AppTheme.background
                     radius: AppTheme.radiusMedium
@@ -182,6 +210,37 @@ Item {
                 musicController.createAlbum(albumTitleField.text, "")
                 albumTitleField.text = ""
             }
+        }
+    }
+    
+    // Delete confirmation dialog
+    Dialog {
+        id: deleteDialog
+        title: "Delete Album"
+        anchors.centerIn: parent
+        width: 350  // Add explicit width
+        standardButtons: Dialog.Yes | Dialog.No
+        Material.theme: Material.Dark
+        
+        property int albumId: -1
+        property string albumTitle: ""
+        
+        background: Rectangle {
+            color: AppTheme.surface
+            radius: AppTheme.radiusLarge
+            border.color: AppTheme.border
+            border.width: 1
+        }
+        
+        Text {
+            text: "Are you sure you want to delete \"" + deleteDialog.albumTitle + "\"?"
+            color: AppTheme.textPrimary
+            wrapMode: Text.WordWrap
+            width: parent.width - 40
+        }
+        
+        onAccepted: {
+            musicController.deleteAlbum(deleteDialog.albumId)
         }
     }
 }

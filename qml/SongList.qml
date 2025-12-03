@@ -155,9 +155,16 @@ Item {
                         }
                     }
                     
-                    // Duration placeholder (would use modelData.duration if available)
+                    // Duration
                     Text {
-                        text: modelData.duration || "3:45"
+                        text: {
+                            if (modelData.duration && modelData.duration > 0) {
+                                var minutes = Math.floor(modelData.duration / 60)
+                                var seconds = modelData.duration % 60
+                                return minutes + ":" + (seconds < 10 ? "0" : "") + seconds
+                            }
+                            return "--:--"
+                        }
                         font.pixelSize: AppTheme.fontSizeSmall
                         color: AppTheme.textSecondary
                     }
@@ -237,53 +244,94 @@ Item {
         id: addToPlaylistDialog
         title: "Add to Playlist"
         anchors.centerIn: parent
+        width: 400  // Increased width
+        height: 500  // Add explicit height
         standardButtons: Dialog.Cancel
         Material.theme: Material.Dark
         
         property int currentSongId: -1
+        property var playlistModel: []
+        
         function openWithSong(id) {
             currentSongId = id
+            playlistModel = musicController.getPlaylists()
             open()
         }
 
         background: Rectangle {
             color: AppTheme.surface
             radius: AppTheme.radiusLarge
+            border.color: AppTheme.border
+            border.width: 1
         }
 
-        ColumnLayout {
+        contentItem: ColumnLayout {
             spacing: AppTheme.spacing3
             
             Label { 
                 text: "Select Playlist:" 
                 font.pixelSize: AppTheme.fontSizeBody
+                font.bold: true
                 color: AppTheme.textPrimary
             }
             
-            Repeater {
-                model: musicController.getPlaylists()
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
                 
-                Rectangle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 44
-                    radius: AppTheme.radiusMedium
-                    color: playlistMouseArea.containsMouse ? AppTheme.surfaceHover : AppTheme.surfaceElevated
+                ColumnLayout {
+                    width: parent.width - 20  // Account for scrollbar
+                    spacing: AppTheme.spacing2
                     
-                    Text {
-                        anchors.centerIn: parent
-                        text: modelData.title
-                        font.pixelSize: AppTheme.fontSizeBody
-                        color: AppTheme.textPrimary
-                    }
-                    
-                    MouseArea {
-                        id: playlistMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            musicController.addSongToPlaylist(modelData.id, addToPlaylistDialog.currentSongId)
-                            addToPlaylistDialog.close()
+                    Repeater {
+                        model: addToPlaylistDialog.playlistModel
+                        
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 50
+                            radius: AppTheme.radiusMedium
+                            color: playlistMouseArea.containsMouse ? AppTheme.surfaceHover : AppTheme.surfaceElevated
+                            
+                            Behavior on color {
+                                ColorAnimation { duration: AppTheme.durationFast }
+                            }
+                            
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.margins: AppTheme.spacing3
+                                spacing: AppTheme.spacing2
+                                
+                                Text {
+                                    text: "🎵"
+                                    font.pixelSize: 20
+                                }
+                                
+                                Text {
+                                    text: modelData.title
+                                    font.pixelSize: AppTheme.fontSizeBody
+                                    color: AppTheme.textPrimary
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                }
+                                
+                                Text {
+                                    text: modelData.songCount + " songs"
+                                    font.pixelSize: AppTheme.fontSizeSmall
+                                    color: AppTheme.textSecondary
+                                }
+                            }
+                            
+                            MouseArea {
+                                id: playlistMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    musicController.addSongToPlaylist(modelData.id, addToPlaylistDialog.currentSongId)
+                                    addToPlaylistDialog.close()
+                                }
+                            }
                         }
                     }
                 }
@@ -295,58 +343,103 @@ Item {
         id: setAlbumDialog
         title: "Set Album"
         anchors.centerIn: parent
+        width: 400  // Increased width
+        height: 500  // Add explicit height
         standardButtons: Dialog.Cancel
         Material.theme: Material.Dark
         
         property int currentSongId: -1
         property string currentTitle: ""
         property string currentArtist: ""
+        property var albumModel: []
         
         function openWithSong(id, title, artist) {
             currentSongId = id
             currentTitle = title
             currentArtist = artist
+            albumModel = musicController.getAlbums()
             open()
         }
 
         background: Rectangle {
             color: AppTheme.surface
             radius: AppTheme.radiusLarge
+            border.color: AppTheme.border
+            border.width: 1
         }
 
-        ColumnLayout {
+        contentItem: ColumnLayout {
             spacing: AppTheme.spacing3
             
             Label { 
                 text: "Select Album:" 
                 font.pixelSize: AppTheme.fontSizeBody
+                font.bold: true
                 color: AppTheme.textPrimary
             }
             
-            Repeater {
-                model: musicController.getAlbums()
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
                 
-                Rectangle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 44
-                    radius: AppTheme.radiusMedium
-                    color: albumMouseArea.containsMouse ? AppTheme.surfaceHover : AppTheme.surfaceElevated
+                ColumnLayout {
+                    width: parent.width - 20  // Account for scrollbar
+                    spacing: AppTheme.spacing2
                     
-                    Text {
-                        anchors.centerIn: parent
-                        text: modelData.title
-                        font.pixelSize: AppTheme.fontSizeBody
-                        color: AppTheme.textPrimary
-                    }
-                    
-                    MouseArea {
-                        id: albumMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            musicController.updateSong(setAlbumDialog.currentSongId, setAlbumDialog.currentTitle, setAlbumDialog.currentArtist, modelData.id)
-                            setAlbumDialog.close()
+                    Repeater {
+                        model: setAlbumDialog.albumModel
+                        
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 50
+                            radius: AppTheme.radiusMedium
+                            color: albumMouseArea.containsMouse ? AppTheme.surfaceHover : AppTheme.surfaceElevated
+                            
+                            Behavior on color {
+                                ColorAnimation { duration: AppTheme.durationFast }
+                            }
+                            
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.margins: AppTheme.spacing3
+                                spacing: AppTheme.spacing2
+                                
+                                Text {
+                                    text: "💿"
+                                    font.pixelSize: 20
+                                }
+                                
+                                Text {
+                                    text: modelData.title
+                                    font.pixelSize: AppTheme.fontSizeBody
+                                    color: AppTheme.textPrimary
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                }
+                                
+                                Text {
+                                    text: modelData.songCount + " songs"
+                                    font.pixelSize: AppTheme.fontSizeSmall
+                                    color: AppTheme.textSecondary
+                                }
+                            }
+                            
+                            MouseArea {
+                                id: albumMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    musicController.updateSong(
+                                        setAlbumDialog.currentSongId,
+                                        setAlbumDialog.currentTitle,
+                                        setAlbumDialog.currentArtist,
+                                        modelData.id
+                                    )
+                                    setAlbumDialog.close()
+                                }
+                            }
                         }
                     }
                 }

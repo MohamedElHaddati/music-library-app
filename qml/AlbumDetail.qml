@@ -40,7 +40,6 @@ Page {
                     radius: AppTheme.radiusMedium
                     color: AppTheme.surface
                     
-                    // Disc icon
                     Text {
                         anchors.centerIn: parent
                         text: "💿"
@@ -93,7 +92,6 @@ Page {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        // Play first song in album
                         var songs = musicController.getSongsByAlbum(root.albumId)
                         if (songs.length > 0) {
                             musicController.playSong(songs[0].id)
@@ -170,9 +168,14 @@ Page {
                             }
                             
                             Text {
-                                text: Math.floor(modelData.duration / 60) + ":" + 
-                                      (modelData.duration % 60 < 10 ? "0" : "") + 
-                                      (modelData.duration % 60)
+                                text: {
+                                    if (modelData.duration && modelData.duration > 0) {
+                                        var minutes = Math.floor(modelData.duration / 60)
+                                        var seconds = modelData.duration % 60
+                                        return minutes + ":" + (seconds < 10 ? "0" : "") + seconds
+                                    }
+                                    return "--:--"
+                                }
                                 font.pixelSize: AppTheme.fontSizeSmall
                                 color: AppTheme.textSecondary
                             }
