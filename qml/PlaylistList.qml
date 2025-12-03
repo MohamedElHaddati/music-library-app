@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Controls.Material
 import MusicManager
 
 Item {
@@ -18,201 +19,143 @@ Item {
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: AppTheme.spacing4
-        spacing: AppTheme.spacing5
-
-        // Create playlist section with modern styling
+        spacing: AppTheme.spacing4
+        
+        // Modern "Create Playlist" button
         Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 60
-            radius: AppTheme.radiusLarge
-            color: AppTheme.surface
+            Layout.preferredWidth: 180
+            Layout.preferredHeight: 44
+            radius: AppTheme.radiusRound
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: AppTheme.primary }
+                GradientStop { position: 1.0; color: AppTheme.primaryHover }
+            }
+            
+            Behavior on opacity {
+                NumberAnimation { duration: AppTheme.durationFast }
+            }
+            
+            opacity: createButtonMouse.containsMouse ? 0.9 : 1.0
             
             RowLayout {
+                anchors.centerIn: parent
+                spacing: AppTheme.spacing2
+                
+                Text {
+                    text: "+"
+                    font.pixelSize: AppTheme.fontSizeLarge
+                    font.bold: true
+                    color: AppTheme.textPrimary
+                }
+                
+                Text {
+                    text: "Create Playlist"
+                    font.pixelSize: AppTheme.fontSizeMedium
+                    font.bold: true
+                    color: AppTheme.textPrimary
+                }
+            }
+            
+            MouseArea {
+                id: createButtonMouse
                 anchors.fill: parent
-                anchors.margins: AppTheme.spacing3
-                spacing: AppTheme.spacing3
-                
-                Rectangle {
-                    Layout.preferredWidth: parent.width - createButton.width - AppTheme.spacing3
-                    Layout.fillHeight: true
-                    radius: AppTheme.radiusMedium
-                    color: AppTheme.surfaceElevated
-                    
-                    TextField {
-                        id: newPlaylistName
-                        anchors.fill: parent
-                        anchors.margins: AppTheme.spacing2
-                        placeholderText: "New Playlist Name"
-                        font.pixelSize: AppTheme.fontSizeBody
-                        color: AppTheme.textPrimary
-                        background: Rectangle { color: "transparent" }
-                    }
-                }
-                
-                Rectangle {
-                    id: createButton
-                    Layout.preferredWidth: 100
-                    Layout.fillHeight: true
-                    radius: AppTheme.radiusMedium
-                    gradient: Gradient {
-                        GradientStop { position: 0.0; color: AppTheme.primary }
-                        GradientStop { position: 1.0; color: AppTheme.primaryHover }
-                    }
-                    
-                    Behavior on opacity {
-                        NumberAnimation { duration: AppTheme.durationFast }
-                    }
-                    
-                    opacity: createMouseArea.containsMouse ? 0.9 : 1.0
-                    
-                    Text {
-                        anchors.centerIn: parent
-                        text: "Create"
-                        font.pixelSize: AppTheme.fontSizeBody
-                        font.bold: true
-                        color: AppTheme.background
-                    }
-                    
-                    MouseArea {
-                        id: createMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            if (newPlaylistName.text !== "") {
-                                musicController.createPlaylist(newPlaylistName.text)
-                                newPlaylistName.text = ""
-                            }
-                        }
-                    }
-                }
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: createPlaylistDialog.open()
             }
         }
 
-        // Featured playlists section header
-        Text {
-            text: "Your Playlists"
-            font.pixelSize: AppTheme.fontSizeXLarge
-            font.bold: true
-            color: AppTheme.textPrimary
-        }
-
-        // Playlist cards in vertical list
-        ListView {
+        // Playlist grid
+        GridView {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            model: root.model
+            cellWidth: 180
+            cellHeight: 240
             clip: true
-            spacing: AppTheme.spacing3
-
+            
+            model: root.model
+            
             delegate: Rectangle {
-                width: ListView.view.width
-                height: 80
+                width: 170
+                height: 230
                 radius: AppTheme.radiusMedium
+                color: mouseArea.containsMouse ? AppTheme.surfaceHover : AppTheme.surface
                 
-                gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop { 
-                        position: 0.0
-                        color: Qt.rgba(
-                            0.2 + (index % 3) * 0.2, 
-                            0.3 + (index % 2) * 0.2, 
-                            0.5 + (index % 4) * 0.15, 
-                            0.3
-                        )
-                    }
-                    GradientStop { 
-                        position: 1.0
-                        color: "transparent"
-                    }
+                Behavior on color {
+                    ColorAnimation { duration: AppTheme.durationFast }
                 }
                 
-                Behavior on scale {
-                    NumberAnimation { duration: AppTheme.durationFast }
-                }
-                
-                scale: playlistMouseArea.pressed ? 0.98 : (playlistMouseArea.containsMouse ? 1.02 : 1.0)
-
-                RowLayout {
+                ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: AppTheme.spacing4
-                    spacing: AppTheme.spacing4
+                    anchors.margins: AppTheme.spacing3
+                    spacing: AppTheme.spacing3
                     
-                    // Playlist icon with gradient
+                    // Playlist icon
                     Rectangle {
-                        width: 56
-                        height: 56
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 140
+                        Layout.alignment: Qt.AlignHCenter
                         radius: AppTheme.radiusMedium
-                        gradient: Gradient {
-                            GradientStop { 
-                                position: 0.0; 
-                                color: index % 2 === 0 ? "#6b46c1" : AppTheme.primary
-                            }
-                            GradientStop { 
-                                position: 1.0; 
-                                color: index % 2 === 0 ? "#e94560" : AppTheme.primaryHover
-                            }
-                        }
+                        color: AppTheme.background
                         
                         Text {
                             anchors.centerIn: parent
-                            text: "♫"
-                            color: AppTheme.textPrimary
-                            font.pixelSize: AppTheme.fontSizeLarge
+                            text: "🎵"
+                            font.pixelSize: 60
                         }
                     }
-
+                    
                     // Playlist info
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: AppTheme.spacing1
+                        spacing: 4
                         
                         Text {
                             text: modelData.title
                             font.pixelSize: AppTheme.fontSizeMedium
                             font.bold: true
                             color: AppTheme.textPrimary
-                            Layout.fillWidth: true
                             elide: Text.ElideRight
+                            Layout.fillWidth: true
                         }
                         
                         Text {
-                            text: modelData.songCount !== undefined 
-                                  ? `Playlist • ${modelData.songCount} songs`
-                                  : "Playlist"
+                            text: modelData.songCount + " songs"
                             font.pixelSize: AppTheme.fontSizeSmall
                             color: AppTheme.textSecondary
                         }
                     }
                     
-                    // Play button
+                    // Delete button
                     Rectangle {
-                        width: AppTheme.minTouchTarget
-                        height: AppTheme.minTouchTarget
-                        radius: width / 2
-                        color: AppTheme.primary
-                        opacity: playlistMouseArea.containsMouse ? 1 : 0
-                        scale: playlistMouseArea.containsMouse ? 1 : 0.8
-                        
-                        Behavior on opacity {
-                            NumberAnimation { duration: AppTheme.durationFast }
-                        }
-                        
-                        Behavior on scale {
-                            NumberAnimation { duration: AppTheme.durationFast }
-                        }
+                        Layout.preferredWidth: 30
+                        Layout.preferredHeight: 30
+                        Layout.alignment: Qt.AlignRight
+                        radius: AppTheme.radiusSmall
+                        color: deleteMouseArea.containsMouse ? AppTheme.error : "transparent"
                         
                         Text {
                             anchors.centerIn: parent
-                            text: "▶"
-                            font.pixelSize: AppTheme.fontSizeMedium
-                            color: AppTheme.background
+                            text: "🗑️"
+                            font.pixelSize: 16
+                        }
+                        
+                        MouseArea {
+                            id: deleteMouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                deleteDialog.playlistId = modelData.id
+                                deleteDialog.playlistTitle = modelData.title
+                                deleteDialog.open()
+                            }
                         }
                     }
                 }
                 
                 MouseArea {
-                    id: playlistMouseArea
+                    id: mouseArea
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
@@ -224,6 +167,79 @@ Item {
                     }
                 }
             }
+        }
+    }
+    
+    // Create playlist dialog
+    Dialog {
+        id: createPlaylistDialog
+        title: "Create Playlist"
+        anchors.centerIn: parent
+        width: 350  // Add explicit width
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        Material.theme: Material.Dark
+        
+        background: Rectangle {
+            color: AppTheme.surface
+            radius: AppTheme.radiusLarge
+            border.color: AppTheme.border
+            border.width: 1
+        }
+        
+        ColumnLayout {
+            width: parent.width
+            spacing: AppTheme.spacing3
+            
+            TextField {
+                id: playlistTitleField
+                placeholderText: "Playlist Title"
+                Layout.fillWidth: true
+                background: Rectangle {
+                    color: AppTheme.background
+                    radius: AppTheme.radiusMedium
+                    border.color: playlistTitleField.activeFocus ? AppTheme.primary : AppTheme.border
+                    border.width: 1
+                }
+                color: AppTheme.textPrimary
+            }
+        }
+        
+        onAccepted: {
+            if (playlistTitleField.text !== "") {
+                musicController.createPlaylist(playlistTitleField.text)
+                playlistTitleField.text = ""
+            }
+        }
+    }
+    
+    // Delete confirmation dialog
+    Dialog {
+        id: deleteDialog
+        title: "Delete Playlist"
+        anchors.centerIn: parent
+        width: 350  // Add explicit width
+        standardButtons: Dialog.Yes | Dialog.No
+        Material.theme: Material.Dark
+        
+        property int playlistId: -1
+        property string playlistTitle: ""
+        
+        background: Rectangle {
+            color: AppTheme.surface
+            radius: AppTheme.radiusLarge
+            border.color: AppTheme.border
+            border.width: 1
+        }
+        
+        Text {
+            text: "Are you sure you want to delete \"" + deleteDialog.playlistTitle + "\"?"
+            color: AppTheme.textPrimary
+            wrapMode: Text.WordWrap
+            width: parent.width - 40
+        }
+        
+        onAccepted: {
+            musicController.deletePlaylist(deleteDialog.playlistId)
         }
     }
 }

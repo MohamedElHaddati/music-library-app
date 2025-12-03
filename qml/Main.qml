@@ -181,6 +181,10 @@ ApplicationWindow {
                             radius: 20
                             color: backMouseArea.containsMouse ? AppTheme.surfaceElevated : "transparent"
                             
+                            Behavior on color {
+                                ColorAnimation { duration: AppTheme.durationFast }
+                            }
+                            
                             Text {
                                 anchors.centerIn: parent
                                 text: "←"

@@ -54,7 +54,7 @@ Rectangle {
             
             MouseArea {
                 anchors.fill: parent
-                onClicked: {
+                onClicked: function(mouse) {
                     if (player.duration > 0) {
                         player.position = (mouse.x / width) * player.duration
                     }
@@ -135,7 +135,7 @@ Rectangle {
                         
                         Text {
                             anchors.centerIn: parent
-                            text: "⏮"
+                            text: "◀◀"
                             font.pixelSize: AppTheme.fontSizeMedium
                             color: AppTheme.textPrimary
                         }
@@ -170,8 +170,9 @@ Rectangle {
                         
                         Text {
                             anchors.centerIn: parent
-                            text: player.playbackState === MediaPlayer.PlayingState ? "⏸" : "▶"
-                            font.pixelSize: AppTheme.fontSizeLarge
+                            text: player.playbackState === MediaPlayer.PlayingState ? "||" : "▶"
+                            font.pixelSize: AppTheme.fontSizeMedium
+                            font.bold: true
                             color: AppTheme.background
                         }
                         
@@ -181,10 +182,11 @@ Rectangle {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                                if (player.playbackState === MediaPlayer.PlayingState)
+                                if (player.playbackState === MediaPlayer.PlayingState) {
                                     player.pause()
-                                else
+                                } else {
                                     player.play()
+                                }
                             }
                         }
                     }
@@ -202,7 +204,7 @@ Rectangle {
                         
                         Text {
                             anchors.centerIn: parent
-                            text: "⏭"
+                            text: "▶▶"
                             font.pixelSize: AppTheme.fontSizeMedium
                             color: AppTheme.textPrimary
                         }
@@ -266,6 +268,8 @@ Rectangle {
                     onValueChanged: player.audioOutput.volume = value
                     
                     background: Rectangle {
+                        x: parent.leftPadding
+                        y: parent.topPadding + parent.availableHeight / 2 - height / 2
                         width: parent.availableWidth
                         height: 4
                         radius: 2
@@ -274,8 +278,8 @@ Rectangle {
                         Rectangle {
                             width: parent.width * parent.parent.visualPosition
                             height: parent.height
-                            radius: 2
                             color: AppTheme.primary
+                            radius: 2
                         }
                     }
                     

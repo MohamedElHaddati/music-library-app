@@ -8,6 +8,19 @@ Page {
     property int playlistId: -1
     property string playlistTitle: ""
     
+    // Add refresh function
+    function refreshSongs() {
+        listView.model = musicController.getSongsByPlaylist(root.playlistId)
+    }
+    
+    // Listen for playlist changes
+    Connections {
+        target: musicController
+        function onPlaylistsChanged() {
+            root.refreshSongs()
+        }
+    }
+    
     background: Rectangle {
         color: AppTheme.background
     }
@@ -70,34 +83,6 @@ Page {
                 }
             }
             
-            // Back button overlay
-            Rectangle {
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.margins: AppTheme.spacing4
-                width: 40
-                height: 40
-                radius: 20
-                color: "#80000000"
-                
-                Text {
-                    anchors.centerIn: parent
-                    text: "←"
-                    font.pixelSize: AppTheme.fontSizeLarge
-                    color: AppTheme.textPrimary
-                }
-                
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        if (root.StackView.view) {
-                            root.StackView.view.pop()
-                        }
-                    }
-                }
-            }
-            
             // Play playlist button
             Rectangle {
                 anchors.bottom: parent.bottom
@@ -119,7 +104,6 @@ Page {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        // Play first song in playlist
                         var songs = musicController.getSongsByPlaylist(root.playlistId)
                         if (songs.length > 0) {
                             musicController.playSong(songs[0].id)
@@ -148,6 +132,7 @@ Page {
                 }
                 
                 ListView {
+                    id: listView
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     spacing: AppTheme.spacing2
@@ -196,17 +181,53 @@ Page {
                             }
                             
                             Text {
-                                text: Math.floor(modelData.duration / 60) + ":" + 
-                                      (modelData.duration % 60 < 10 ? "0" : "") + 
-                                      (modelData.duration % 60)
+                                text: {
+                                    if (modelData.duration && modelData.duration > 0) {
+                                        var minutes = Math.floor(modelData.duration / 60)
+                                        var seconds = modelData.duration % 60
+                                        return minutes + ":" + (seconds < 10 ? "0" : "") + seconds
+                                    }
+                                    return "--:--"
+                                }
                                 font.pixelSize: AppTheme.fontSizeSmall
                                 color: AppTheme.textSecondary
+                            }
+                            
+                            // Delete from playlist button
+                            Rectangle {
+                                width: 32
+                                height: 32
+                                radius: AppTheme.radiusSmall
+                                color: deleteMouseArea.containsMouse ? AppTheme.error : "transparent"
+                                
+                                Behavior on color {
+                                    ColorAnimation { duration: AppTheme.durationFast }
+                                }
+                                
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "×"
+                                    font.pixelSize: 24
+                                    font.bold: true
+                                    color: AppTheme.textPrimary
+                                }
+                                
+                                MouseArea {
+                                    id: deleteMouseArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        musicController.removeSongFromPlaylist(root.playlistId, modelData.id)
+                                    }
+                                }
                             }
                         }
                         
                         MouseArea {
                             id: mouseArea
                             anchors.fill: parent
+                            anchors.rightMargin: 40  // Don't overlap delete button
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: musicController.playSong(modelData.id)

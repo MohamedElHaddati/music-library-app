@@ -26,8 +26,12 @@ public:
     Q_INVOKABLE void deleteSong(int id);
     
     Q_INVOKABLE void createAlbum(const QString &title, const QString &coverPath);
+    Q_INVOKABLE void deleteAlbum(int id);
+    
     Q_INVOKABLE void createPlaylist(const QString &title);
+    Q_INVOKABLE void deletePlaylist(int id);
     Q_INVOKABLE void addSongToPlaylist(int playlistId, int songId);
+    Q_INVOKABLE void removeSongFromPlaylist(int playlistId, int songId);
     
     Q_INVOKABLE void playSong(int id);
     Q_INVOKABLE void nextSong();
