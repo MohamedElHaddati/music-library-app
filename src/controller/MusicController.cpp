@@ -2,225 +2,228 @@
 #include <QFileInfo>
 #include <QDebug>
 
-MusicController::MusicController(QObject *parent) : QObject(parent) {}
+MusicController::MusicController(QObject *parent)
+    : QObject(parent), currentSongId(-1), currentPlaylistIndex(-1) {
+}
 
 QVariantList MusicController::getSongs() {
-    QVariantList list;
-    std::vector<Song> songs = m_songDAO.getAllSongs();
-    for (size_t i = 0; i < songs.size(); ++i) {
+    std::vector<Song> songsVec = songDAO.getAllSongs();
+    QList<Song> songs = QList<Song>(songsVec.begin(), songsVec.end());
+    
+    QVariantList result;
+    for (const Song& song : songs) {
         QVariantMap map;
-        map["id"] = songs[i].getId();
-        map["title"] = songs[i].getTitle();
-        map["artist"] = songs[i].getArtist();
-        map["path"] = songs[i].getFilePath();
-        map["albumId"] = songs[i].getAlbumId();
-        list.append(map);
+        map["id"] = song.getId();
+        map["title"] = song.getTitle();
+        map["artist"] = song.getArtist();
+        map["albumId"] = song.getAlbumId();
+        map["duration"] = song.getDuration();
+        map["path"] = song.getFilePath();
+        result.append(map);
     }
-    return list;
+    return result;
 }
 
 QVariantList MusicController::getAlbums() {
-    QVariantList list;
-    std::vector<Album> albums = m_albumDAO.getAllAlbums();
-    for (size_t i = 0; i < albums.size(); ++i) {
+    std::vector<Album> albumsVec = albumDAO.getAllAlbums();
+    QList<Album> albums = QList<Album>(albumsVec.begin(), albumsVec.end());
+    
+    QVariantList result;
+    for (const Album& album : albums) {
         QVariantMap map;
-        map["id"] = albums[i].getId();
-        map["title"] = albums[i].getTitle();
-        map["cover"] = albums[i].getCoverPath();
-        list.append(map);
+        map["id"] = album.getId();
+        map["title"] = album.getTitle();
+        map["coverPath"] = album.getCoverPath();
+        
+        // Count songs in this album
+        std::vector<Song> albumSongs = songDAO.getAllSongs();
+        int count = 0;
+        for (const Song& song : albumSongs) {
+            if (song.getAlbumId() == album.getId()) {
+                count++;
+            }
+        }
+        map["songCount"] = count;
+        result.append(map);
     }
-    return list;
+    return result;
 }
 
 QVariantList MusicController::getPlaylists() {
-    QVariantList list;
-    std::vector<Playlist> playlists = m_playlistDAO.getAllPlaylists();
-    for (size_t i = 0; i < playlists.size(); ++i) {
+    std::vector<Playlist> playlistsVec = playlistDAO.getAllPlaylists();
+    QList<Playlist> playlists = QList<Playlist>(playlistsVec.begin(), playlistsVec.end());
+    
+    QVariantList result;
+    for (const Playlist& playlist : playlists) {
         QVariantMap map;
-        map["id"] = playlists[i].getId();
-        map["title"] = playlists[i].getTitle();
-        list.append(map);
+        map["id"] = playlist.getId();
+        map["title"] = playlist.getTitle();
+        
+        // Count songs - this needs to be implemented in PlaylistDAO
+        map["songCount"] = 0; // TODO: implement getSongsByPlaylist in DAO
+        result.append(map);
     }
-    return list;
+    return result;
+}
+
+QVariantList MusicController::getSongsByAlbum(int albumId) {
+    std::vector<Song> songsVec = songDAO.getAllSongs();
+    QVariantList result;
+    
+    for (const Song& song : songsVec) {
+        if (song.getAlbumId() == albumId) {
+            QVariantMap map;
+            map["id"] = song.getId();
+            map["title"] = song.getTitle();
+            map["artist"] = song.getArtist();
+            map["albumId"] = song.getAlbumId();
+            map["duration"] = song.getDuration();
+            map["path"] = song.getFilePath();
+            result.append(map);
+        }
+    }
+    return result;
+}
+
+QVariantList MusicController::getSongsByPlaylist(int playlistId) {
+    // For now, return empty list until PlaylistDAO method is implemented
+    QVariantList result;
+    // TODO: Implement getSongsByPlaylist in PlaylistDAO
+    return result;
 }
 
 QVariantList MusicController::search(const QString& query) {
-    QVariantList list;
-    std::vector<Song> songs = m_songDAO.searchSongs(query);
-    for (size_t i = 0; i < songs.size(); ++i) {
-        QVariantMap map;
-        map["id"] = songs[i].getId();
-        map["title"] = songs[i].getTitle();
-        map["artist"] = songs[i].getArtist();
-        map["path"] = songs[i].getFilePath();
-        list.append(map);
+    std::vector<Song> songsVec = songDAO.getAllSongs();
+    QVariantList result;
+    
+    QString lowerQuery = query.toLower();
+    for (const Song& song : songsVec) {
+        if (song.getTitle().toLower().contains(lowerQuery) ||
+            song.getArtist().toLower().contains(lowerQuery)) {
+            QVariantMap map;
+            map["id"] = song.getId();
+            map["title"] = song.getTitle();
+            map["artist"] = song.getArtist();
+            map["albumId"] = song.getAlbumId();
+            map["duration"] = song.getDuration();
+            map["path"] = song.getFilePath();
+            result.append(map);
+        }
     }
-    return list;
+    return result;
 }
 
-void MusicController::addSong(const QString& path) {
-    // Simple logic: use filename as title, unknown artist
-    // Remove "file:///" prefix if present (common in QML)
-    QString cleanPath = path;
+void MusicController::addSong(const QString& filePath) {
+    QString cleanPath = filePath;
     if (cleanPath.startsWith("file:///")) {
         cleanPath = cleanPath.mid(8);
     }
     
     QFileInfo info(cleanPath);
-    Song s(0, info.baseName(), "Unknown Artist", cleanPath);
+    QString title = info.baseName();
     
-    if (m_songDAO.addSong(s)) {
+    Song song(-1, title, "Unknown Artist", cleanPath, -1, 0);
+    songDAO.addSong(song);
+    emit songsChanged();
+}
+
+void MusicController::updateSong(int id, const QString& title, const QString& artist, int albumId) {
+    Song song = songDAO.getSong(id);
+    if (song.getId() != -1) {
+        song.setTitle(title);
+        song.setArtist(artist);
+        song.setAlbumId(albumId);
+        songDAO.updateSong(song);
         emit songsChanged();
     }
 }
 
 void MusicController::deleteSong(int id) {
-    if (m_songDAO.deleteSong(id)) {
-        emit songsChanged();
-    }
+    songDAO.deleteSong(id);
+    emit songsChanged();
 }
 
-void MusicController::createPlaylist(const QString& name) {
-    if (m_playlistDAO.addPlaylist(name)) {
-        emit playlistsChanged();
-    }
-}
-
-void MusicController::addSongToPlaylist(int playlistId, int songId) {
-    m_playlistDAO.addSongToPlaylist(playlistId, songId);
-}
-
-QVariantList MusicController::getPlaylistSongs(int playlistId) {
-    QVariantList list;
-    std::vector<int> songIds = m_playlistDAO.getSongIds(playlistId);
-    for (int id : songIds) {
-        Song s = m_songDAO.getSong(id);
-        if (s.getId() != -1) {
-            QVariantMap map;
-            map["id"] = s.getId();
-            map["title"] = s.getTitle();
-            map["artist"] = s.getArtist();
-            map["path"] = s.getFilePath();
-            map["albumId"] = s.getAlbumId();
-            list.append(map);
-        }
-    }
-    return list;
-}
-
-void MusicController::createAlbum(const QString& title) {
-    Album a(0, title);
-    if (m_albumDAO.addAlbum(a)) {
-        emit albumsChanged();
-    }
-}
-
-void MusicController::updateSong(int id, const QString& title, const QString& artist, int albumId) {
-    Song s = m_songDAO.getSong(id);
-    if (s.getId() != -1) {
-        s.setTitle(title);
-        s.setArtist(artist);
-        s.setAlbumId(albumId);
-        if (m_songDAO.updateSong(s)) {
-            emit songsChanged();
-        }
-    }
-}
-
-QVariantList MusicController::getAlbumSongs(int albumId) {
-    QVariantList list;
-    std::vector<Song> allSongs = m_songDAO.getAllSongs();
-    for (const Song& s : allSongs) {
-        if (s.getAlbumId() == albumId) {
-            QVariantMap map;
-            map["id"] = s.getId();
-            map["title"] = s.getTitle();
-            map["artist"] = s.getArtist();
-            map["path"] = s.getFilePath();
-            map["albumId"] = s.getAlbumId();
-            list.append(map);
-        }
-    }
-    return list;
-}
-
-void MusicController::updateAlbum(int id, const QString& title, const QString& coverPath) {
+void MusicController::createAlbum(const QString& title, const QString& coverPath) {
+    Album album(-1, title, coverPath);
+    albumDAO.addAlbum(album);
     emit albumsChanged();
 }
 
-// --- Playback Queue Logic ---
+void MusicController::createPlaylist(const QString& title) {
+    Playlist playlist(-1, title);
+    playlistDAO.addPlaylist(playlist);
+    emit playlistsChanged();
+}
 
-void MusicController::loadQueue(const std::vector<Song>& songs) {
-    m_queue = songs;
-    m_queueIndex = 0;
+void MusicController::addSongToPlaylist(int playlistId, int songId) {
+    playlistDAO.addSongToPlaylist(playlistId, songId);
+    emit playlistsChanged();
+}
+
+void MusicController::playSong(int id) {
+    currentSongId = id;
     emit currentSongChanged();
 }
 
-void MusicController::playSong(int songId) {
-    Song s = m_songDAO.getSong(songId);
-    if (s.getId() != -1) {
-        std::vector<Song> q;
-        q.push_back(s);
-        loadQueue(q);
-    }
-}
-
-void MusicController::playAlbum(int albumId) {
-    std::vector<Song> allSongs = m_songDAO.getAllSongs();
-    std::vector<Song> albumSongs;
-    for (const Song& s : allSongs) {
-        if (s.getAlbumId() == albumId) {
-            albumSongs.push_back(s);
-        }
-    }
-    if (!albumSongs.empty()) {
-        loadQueue(albumSongs);
-    }
-}
-
-void MusicController::playPlaylist(int playlistId) {
-    std::vector<int> ids = m_playlistDAO.getSongIds(playlistId);
-    std::vector<Song> playlistSongs;
-    for (int id : ids) {
-        Song s = m_songDAO.getSong(id);
-        if (s.getId() != -1) {
-            playlistSongs.push_back(s);
-        }
-    }
-    if (!playlistSongs.empty()) {
-        loadQueue(playlistSongs);
-    }
-}
-
-QVariantMap MusicController::getCurrentSong() const {
-    QVariantMap map;
-    if (m_queueIndex >= 0 && m_queueIndex < (int)m_queue.size()) {
-        const Song& s = m_queue[m_queueIndex];
-        map["id"] = s.getId();
-        map["title"] = s.getTitle();
-        map["artist"] = s.getArtist();
-        map["path"] = s.getFilePath();
-        map["albumId"] = s.getAlbumId();
-        map["hasSong"] = true;
-    } else {
-        map["hasSong"] = false;
-        map["title"] = "No Song Playing";
-        map["artist"] = "";
-        map["path"] = "";
-    }
-    return map;
-}
-
 void MusicController::nextSong() {
-    if (m_queueIndex < (int)m_queue.size() - 1) {
-        m_queueIndex++;
-        emit currentSongChanged();
+    std::vector<Song> songsVec = songDAO.getAllSongs();
+    QList<Song> allSongs = QList<Song>(songsVec.begin(), songsVec.end());
+    
+    if (allSongs.isEmpty()) return;
+    
+    for (int i = 0; i < allSongs.size(); ++i) {
+        if (allSongs[i].getId() == currentSongId) {
+            if (i + 1 < allSongs.size()) {
+                playSong(allSongs[i + 1].getId());
+            } else {
+                playSong(allSongs[0].getId());
+            }
+            return;
+        }
     }
 }
 
 void MusicController::previousSong() {
-    if (m_queueIndex > 0) {
-        m_queueIndex--;
-        emit currentSongChanged();
+    std::vector<Song> songsVec = songDAO.getAllSongs();
+    QList<Song> allSongs = QList<Song>(songsVec.begin(), songsVec.end());
+    
+    if (allSongs.isEmpty()) return;
+    
+    for (int i = 0; i < allSongs.size(); ++i) {
+        if (allSongs[i].getId() == currentSongId) {
+            if (i > 0) {
+                playSong(allSongs[i - 1].getId());
+            } else {
+                playSong(allSongs.last().getId());
+            }
+            return;
+        }
     }
+}
+
+QVariantMap MusicController::getCurrentSong() {
+    QVariantMap map;
+    if (currentSongId == -1) {
+        map["hasSong"] = false;
+        map["title"] = "";
+        map["artist"] = "";
+        map["path"] = "";
+        return map;
+    }
+    
+    Song song = songDAO.getSong(currentSongId);
+    if (song.getId() == -1) {
+        map["hasSong"] = false;
+        map["title"] = "";
+        map["artist"] = "";
+        map["path"] = "";
+        return map;
+    }
+    
+    map["hasSong"] = true;
+    map["id"] = song.getId();
+    map["title"] = song.getTitle();
+    map["artist"] = song.getArtist();
+    map["path"] = "file:///" + song.getFilePath();
+    return map;
 }
