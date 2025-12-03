@@ -9,7 +9,7 @@ ApplicationWindow {
     width: 1024
     height: 768
     visible: true
-    title: "Music Manager Pro"
+    title: "Music Player"
     
     // Global Dark AppTheme
     Material.theme: Material.Dark
@@ -81,7 +81,7 @@ ApplicationWindow {
                         
                         Text {
                             visible: !collapsedSidebar
-                            text: "Music Pro"
+                            text: "Music Player"
                             font.pixelSize: AppTheme.fontSizeLarge
                             font.bold: true
                             color: AppTheme.textPrimary
@@ -197,7 +197,11 @@ ApplicationWindow {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: stackView.pop()
+                                onClicked: {
+                                    if (stackView.depth > 0) {
+                                        stackView.pop()
+                                    }
+                                }
                             }
                         }
                         
