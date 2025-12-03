@@ -2,6 +2,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickStyle>
 #include "controller/MusicController.h"
 #include "dao/Database.h"
 
@@ -11,6 +12,8 @@ int main(int argc, char *argv[])
 
     // Initialize Database
     Database::instance().initialize();
+
+    QQuickStyle::setStyle("Material");
 
     QQmlApplicationEngine engine;
     

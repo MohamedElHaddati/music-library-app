@@ -17,34 +17,34 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Theme.spacing4
-        spacing: Theme.spacing5
+        anchors.margins: AppTheme.spacing4
+        spacing: AppTheme.spacing5
 
         // Create playlist section with modern styling
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 60
-            radius: Theme.radiusLarge
-            color: Theme.surface
+            radius: AppTheme.radiusLarge
+            color: AppTheme.surface
             
             RowLayout {
                 anchors.fill: parent
-                anchors.margins: Theme.spacing3
-                spacing: Theme.spacing3
+                anchors.margins: AppTheme.spacing3
+                spacing: AppTheme.spacing3
                 
                 Rectangle {
-                    Layout.preferredWidth: parent.width - createButton.width - Theme.spacing3
+                    Layout.preferredWidth: parent.width - createButton.width - AppTheme.spacing3
                     Layout.fillHeight: true
-                    radius: Theme.radiusMedium
-                    color: Theme.surfaceElevated
+                    radius: AppTheme.radiusMedium
+                    color: AppTheme.surfaceElevated
                     
                     TextField {
                         id: newPlaylistName
                         anchors.fill: parent
-                        anchors.margins: Theme.spacing2
+                        anchors.margins: AppTheme.spacing2
                         placeholderText: "New Playlist Name"
-                        font.pixelSize: Theme.fontSizeBody
-                        color: Theme.textPrimary
+                        font.pixelSize: AppTheme.fontSizeBody
+                        color: AppTheme.textPrimary
                         background: Rectangle { color: "transparent" }
                     }
                 }
@@ -53,14 +53,14 @@ Item {
                     id: createButton
                     Layout.preferredWidth: 100
                     Layout.fillHeight: true
-                    radius: Theme.radiusMedium
+                    radius: AppTheme.radiusMedium
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Theme.primary }
-                        GradientStop { position: 1.0; color: Theme.primaryHover }
+                        GradientStop { position: 0.0; color: AppTheme.primary }
+                        GradientStop { position: 1.0; color: AppTheme.primaryHover }
                     }
                     
                     Behavior on opacity {
-                        NumberAnimation { duration: Theme.durationFast }
+                        NumberAnimation { duration: AppTheme.durationFast }
                     }
                     
                     opacity: createMouseArea.containsMouse ? 0.9 : 1.0
@@ -68,9 +68,9 @@ Item {
                     Text {
                         anchors.centerIn: parent
                         text: "Create"
-                        font.pixelSize: Theme.fontSizeBody
+                        font.pixelSize: AppTheme.fontSizeBody
                         font.bold: true
-                        color: Theme.background
+                        color: AppTheme.background
                     }
                     
                     MouseArea {
@@ -92,9 +92,9 @@ Item {
         // Featured playlists section header
         Text {
             text: "Your Playlists"
-            font.pixelSize: Theme.fontSizeXLarge
+            font.pixelSize: AppTheme.fontSizeXLarge
             font.bold: true
-            color: Theme.textPrimary
+            color: AppTheme.textPrimary
         }
 
         // Playlist cards in vertical list
@@ -103,12 +103,12 @@ Item {
             Layout.fillHeight: true
             model: root.model
             clip: true
-            spacing: Theme.spacing3
+            spacing: AppTheme.spacing3
 
             delegate: Rectangle {
                 width: ListView.view.width
                 height: 80
-                radius: Theme.radiusMedium
+                radius: AppTheme.radiusMedium
                 
                 gradient: Gradient {
                     orientation: Gradient.Horizontal
@@ -128,50 +128,50 @@ Item {
                 }
                 
                 Behavior on scale {
-                    NumberAnimation { duration: Theme.durationFast }
+                    NumberAnimation { duration: AppTheme.durationFast }
                 }
                 
                 scale: playlistMouseArea.pressed ? 0.98 : (playlistMouseArea.containsMouse ? 1.02 : 1.0)
 
                 RowLayout {
                     anchors.fill: parent
-                    anchors.margins: Theme.spacing4
-                    spacing: Theme.spacing4
+                    anchors.margins: AppTheme.spacing4
+                    spacing: AppTheme.spacing4
                     
                     // Playlist icon with gradient
                     Rectangle {
                         width: 56
                         height: 56
-                        radius: Theme.radiusMedium
+                        radius: AppTheme.radiusMedium
                         gradient: Gradient {
                             GradientStop { 
                                 position: 0.0; 
-                                color: index % 2 === 0 ? "#6b46c1" : Theme.primary
+                                color: index % 2 === 0 ? "#6b46c1" : AppTheme.primary
                             }
                             GradientStop { 
                                 position: 1.0; 
-                                color: index % 2 === 0 ? "#e94560" : Theme.primaryHover
+                                color: index % 2 === 0 ? "#e94560" : AppTheme.primaryHover
                             }
                         }
                         
                         Text {
                             anchors.centerIn: parent
                             text: "♫"
-                            color: Theme.textPrimary
-                            font.pixelSize: Theme.fontSizeLarge
+                            color: AppTheme.textPrimary
+                            font.pixelSize: AppTheme.fontSizeLarge
                         }
                     }
 
                     // Playlist info
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: Theme.spacing1
+                        spacing: AppTheme.spacing1
                         
                         Text {
                             text: modelData.title
-                            font.pixelSize: Theme.fontSizeMedium
+                            font.pixelSize: AppTheme.fontSizeMedium
                             font.bold: true
-                            color: Theme.textPrimary
+                            color: AppTheme.textPrimary
                             Layout.fillWidth: true
                             elide: Text.ElideRight
                         }
@@ -180,33 +180,33 @@ Item {
                             text: modelData.songCount !== undefined 
                                   ? `Playlist • ${modelData.songCount} songs`
                                   : "Playlist"
-                            font.pixelSize: Theme.fontSizeSmall
-                            color: Theme.textSecondary
+                            font.pixelSize: AppTheme.fontSizeSmall
+                            color: AppTheme.textSecondary
                         }
                     }
                     
                     // Play button
                     Rectangle {
-                        width: Theme.minTouchTarget
-                        height: Theme.minTouchTarget
+                        width: AppTheme.minTouchTarget
+                        height: AppTheme.minTouchTarget
                         radius: width / 2
-                        color: Theme.primary
+                        color: AppTheme.primary
                         opacity: playlistMouseArea.containsMouse ? 1 : 0
                         scale: playlistMouseArea.containsMouse ? 1 : 0.8
                         
                         Behavior on opacity {
-                            NumberAnimation { duration: Theme.durationFast }
+                            NumberAnimation { duration: AppTheme.durationFast }
                         }
                         
                         Behavior on scale {
-                            NumberAnimation { duration: Theme.durationFast }
+                            NumberAnimation { duration: AppTheme.durationFast }
                         }
                         
                         Text {
                             anchors.centerIn: parent
                             text: "▶"
-                            font.pixelSize: Theme.fontSizeMedium
-                            color: Theme.background
+                            font.pixelSize: AppTheme.fontSizeMedium
+                            color: AppTheme.background
                         }
                     }
                 }
@@ -217,7 +217,7 @@ Item {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        stackView.push("qrc:/qt/qml/MusicManager/qml/PlaylistDetail.qml", {
+                        window.stackView.push("qrc:/qt/qml/MusicManager/qml/PlaylistDetail.qml", {
                             "playlistId": modelData.id,
                             "playlistTitle": modelData.title
                         })

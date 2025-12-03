@@ -10,7 +10,7 @@ Page {
     property string albumCover: ""
     
     background: Rectangle {
-        color: Theme.background
+        color: AppTheme.background
     }
 
     ColumnLayout {
@@ -23,158 +23,82 @@ Page {
             Layout.preferredHeight: 300
             
             gradient: Gradient {
-                GradientStop { position: 0.0; color: Theme.primary }
-                GradientStop { position: 1.0; color: Theme.background }
+                GradientStop { position: 0.0; color: AppTheme.primary }
+                GradientStop { position: 1.0; color: "#1a1a1a" }
             }
             
             RowLayout {
                 anchors.fill: parent
-                anchors.margins: Theme.spacing6
-                spacing: Theme.spacing6
+                anchors.margins: AppTheme.spacing6
+                spacing: AppTheme.spacing5
                 
-                // Large album artwork
+                // Album artwork with disc icon
                 Rectangle {
                     Layout.preferredWidth: 200
                     Layout.preferredHeight: 200
-                    radius: Theme.radiusLarge
-                    color: Theme.surfaceElevated
+                    Layout.alignment: Qt.AlignVCenter
+                    radius: AppTheme.radiusMedium
+                    color: AppTheme.surface
                     
-                    // Shadow effect
-                    layer.enabled: true
-                    layer.effect: Item {
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: -Theme.spacing3
-                            radius: Theme.radiusLarge
-                            color: "black"
-                            opacity: Theme.shadowOpacityLarge
-                            z: -1
-                        }
-                    }
-                    
+                    // Disc icon
                     Text {
                         anchors.centerIn: parent
-                        text: "♫"
-                        font.pixelSize: Theme.fontSizeXXXLarge + 24
-                        color: Theme.textSecondary
+                        text: "💿"
+                        font.pixelSize: 80
                     }
                 }
                 
                 // Album info
                 ColumnLayout {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    spacing: Theme.spacing3
-                    
-                    Item { Layout.fillHeight: true }
+                    Layout.alignment: Qt.AlignVCenter
+                    spacing: AppTheme.spacing3
                     
                     Text {
                         text: "ALBUM"
-                        font.pixelSize: Theme.fontSizeSmall
+                        font.pixelSize: AppTheme.fontSizeSmall
                         font.bold: true
-                        color: Theme.textPrimary
-                        opacity: 0.7
+                        color: AppTheme.textSecondary
                     }
                     
                     Text {
                         text: root.albumTitle
-                        font.pixelSize: Theme.fontSizeXXXLarge
+                        font.pixelSize: 48
                         font.bold: true
-                        color: Theme.textPrimary
+                        color: AppTheme.textPrimary
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
                     }
-                    
-                    RowLayout {
-                        spacing: Theme.spacing2
-                        
-                        Text {
-                            text: musicController.getAlbumSongs(root.albumId).length + " songs"
-                            font.pixelSize: Theme.fontSizeBody
-                            color: Theme.textSecondary
-                        }
-                    }
-                    
-                    Item { Layout.fillHeight: true }
-                }
-            }
-            
-            // Back button overlay
-            Rectangle {
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.margins: Theme.spacing3
-                width: Theme.minTouchTarget
-                height: Theme.minTouchTarget
-                radius: Theme.radiusRound
-                color: Theme.background
-                opacity: backMouseArea.containsMouse ? 0.9 : 0.7
-                
-                Behavior on opacity {
-                    NumberAnimation { duration: Theme.durationFast }
-                }
-                
-                Text {
-                    anchors.centerIn: parent
-                    text: "←"
-                    font.pixelSize: Theme.fontSizeLarge
-                    color: Theme.textPrimary
-                }
-                
-                MouseArea {
-                    id: backMouseArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: stackView.pop()
                 }
             }
             
             // Play album button
             Rectangle {
-                anchors.top: parent.top
+                anchors.bottom: parent.bottom
                 anchors.right: parent.right
-                anchors.margins: Theme.spacing3
-                width: 140
-                height: Theme.minTouchTarget
-                radius: Theme.radiusRound
-                color: Theme.primary
-                opacity: playAlbumMouseArea.pressed ? 0.8 : 1
+                anchors.margins: AppTheme.spacing4
+                width: 56
+                height: 56
+                radius: 28
+                color: AppTheme.primary
                 
-                Behavior on opacity {
-                    NumberAnimation { duration: Theme.durationFast }
-                }
-                
-                Behavior on scale {
-                    NumberAnimation { duration: Theme.durationFast }
-                }
-                
-                scale: playAlbumMouseArea.containsMouse ? 1.05 : 1.0
-                
-                RowLayout {
+                Text {
                     anchors.centerIn: parent
-                    spacing: Theme.spacing2
-                    
-                    Text {
-                        text: "▶"
-                        font.pixelSize: Theme.fontSizeMedium
-                        color: Theme.background
-                    }
-                    
-                    Text {
-                        text: "Play Album"
-                        font.pixelSize: Theme.fontSizeBody
-                        font.bold: true
-                        color: Theme.background
-                    }
+                    text: "▶"
+                    font.pixelSize: AppTheme.fontSizeLarge
+                    color: AppTheme.textPrimary
                 }
                 
                 MouseArea {
-                    id: playAlbumMouseArea
                     anchors.fill: parent
-                    hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: musicController.playAlbum(root.albumId)
+                    onClicked: {
+                        // Play first song in album
+                        var songs = musicController.getSongsByAlbum(root.albumId)
+                        if (songs.length > 0) {
+                            musicController.playSong(songs[0].id)
+                        }
+                    }
                 }
             }
         }
@@ -183,84 +107,79 @@ Page {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: Theme.background
+            color: AppTheme.background
             
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: Theme.spacing4
-                spacing: Theme.spacing3
+                anchors.margins: AppTheme.spacing5
+                spacing: AppTheme.spacing4
                 
                 Text {
                     text: "Tracks"
-                    font.pixelSize: Theme.fontSizeLarge
+                    font.pixelSize: AppTheme.fontSizeXLarge
                     font.bold: true
-                    color: Theme.textPrimary
+                    color: AppTheme.textPrimary
                 }
                 
                 ListView {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    model: musicController.getAlbumSongs(root.albumId)
+                    spacing: AppTheme.spacing2
                     clip: true
-                    spacing: Theme.spacing2
+                    
+                    model: musicController.getSongsByAlbum(root.albumId)
                     
                     delegate: Rectangle {
                         width: ListView.view.width
                         height: 60
-                        radius: Theme.radiusMedium
-                        color: trackMouseArea.containsMouse ? Theme.surfaceHover : Theme.surface
-                        
-                        Behavior on color {
-                            ColorAnimation { duration: Theme.durationFast }
-                        }
+                        radius: AppTheme.radiusMedium
+                        color: mouseArea.containsMouse ? AppTheme.surfaceHover : "transparent"
                         
                         RowLayout {
                             anchors.fill: parent
-                            anchors.margins: Theme.spacing3
-                            spacing: Theme.spacing3
+                            anchors.margins: AppTheme.spacing3
+                            spacing: AppTheme.spacing3
                             
-                            // Track number
                             Text {
                                 text: (index + 1).toString()
-                                font.pixelSize: Theme.fontSizeBody
-                                color: Theme.textSecondary
+                                font.pixelSize: AppTheme.fontSizeMedium
+                                color: AppTheme.textSecondary
                                 Layout.preferredWidth: 30
                                 horizontalAlignment: Text.AlignRight
                             }
                             
-                            // Track info
                             ColumnLayout {
                                 Layout.fillWidth: true
-                                spacing: Theme.spacing1
+                                spacing: 4
                                 
                                 Text {
                                     text: modelData.title
-                                    font.pixelSize: Theme.fontSizeBody
-                                    font.bold: true
-                                    color: Theme.textPrimary
+                                    font.pixelSize: AppTheme.fontSizeMedium
+                                    color: AppTheme.textPrimary
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true
                                 }
                                 
                                 Text {
                                     text: modelData.artist
-                                    font.pixelSize: Theme.fontSizeSmall
-                                    color: Theme.textSecondary
+                                    font.pixelSize: AppTheme.fontSizeSmall
+                                    color: AppTheme.textSecondary
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true
                                 }
                             }
                             
-                            // Duration (would use modelData.duration if available)
                             Text {
-                                text: modelData.duration || "3:45"
-                                font.pixelSize: Theme.fontSizeSmall
-                                color: Theme.textSecondary
+                                text: Math.floor(modelData.duration / 60) + ":" + 
+                                      (modelData.duration % 60 < 10 ? "0" : "") + 
+                                      (modelData.duration % 60)
+                                font.pixelSize: AppTheme.fontSizeSmall
+                                color: AppTheme.textSecondary
                             }
                         }
                         
                         MouseArea {
-                            id: trackMouseArea
+                            id: mouseArea
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor

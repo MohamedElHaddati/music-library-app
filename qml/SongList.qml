@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Controls.Material
 import QtQuick.Dialogs
 import MusicManager
 
@@ -20,41 +21,41 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Theme.spacing4
-        spacing: Theme.spacing4
+        anchors.margins: AppTheme.spacing4
+        spacing: AppTheme.spacing4
         
         // Modern "Add Song" button with gradient
         Rectangle {
             Layout.preferredWidth: 140
             Layout.preferredHeight: 44
-            radius: Theme.radiusRound
+            radius: AppTheme.radiusRound
             gradient: Gradient {
-                GradientStop { position: 0.0; color: Theme.primary }
-                GradientStop { position: 1.0; color: Theme.primaryHover }
+                GradientStop { position: 0.0; color: AppTheme.primary }
+                GradientStop { position: 1.0; color: AppTheme.primaryHover }
             }
             
             Behavior on opacity {
-                NumberAnimation { duration: Theme.durationFast }
+                NumberAnimation { duration: AppTheme.durationFast }
             }
             
             opacity: addButtonMouse.containsMouse ? 0.9 : 1.0
             
             RowLayout {
                 anchors.centerIn: parent
-                spacing: Theme.spacing2
+                spacing: AppTheme.spacing2
                 
                 Text {
                     text: "+"
-                    font.pixelSize: Theme.fontSizeLarge
+                    font.pixelSize: AppTheme.fontSizeLarge
                     font.bold: true
-                    color: Theme.background
+                    color: AppTheme.background
                 }
                 
                 Text {
                     text: "Add Song"
-                    font.pixelSize: Theme.fontSizeBody
+                    font.pixelSize: AppTheme.fontSizeBody
                     font.bold: true
-                    color: Theme.background
+                    color: AppTheme.background
                 }
             }
             
@@ -74,59 +75,59 @@ Item {
             Layout.fillHeight: true
             model: root.model
             clip: true
-            spacing: Theme.spacing2
+            spacing: AppTheme.spacing2
 
             delegate: Rectangle {
                 width: ListView.view.width
                 height: 72
-                radius: Theme.radiusMedium
-                color: songMouseArea.containsMouse ? Theme.surfaceHover : Theme.surface
+                radius: AppTheme.radiusMedium
+                color: songMouseArea.containsMouse ? AppTheme.surfaceHover : AppTheme.surface
                 
                 Behavior on color {
-                    ColorAnimation { duration: Theme.durationFast }
+                    ColorAnimation { duration: AppTheme.durationFast }
                 }
                 
                 Behavior on scale {
-                    NumberAnimation { duration: Theme.durationFast }
+                    NumberAnimation { duration: AppTheme.durationFast }
                 }
                 
                 scale: songMouseArea.pressed ? 0.98 : 1.0
                 
                 RowLayout {
                     anchors.fill: parent
-                    anchors.margins: Theme.spacing3
-                    spacing: Theme.spacing3
+                    anchors.margins: AppTheme.spacing3
+                    spacing: AppTheme.spacing3
                     
                     // Album art placeholder
                     Rectangle {
-                        width: Theme.albumArtSmall
-                        height: Theme.albumArtSmall
-                        radius: Theme.radiusSmall
-                        color: Theme.surfaceElevated
+                        width: AppTheme.albumArtSmall
+                        height: AppTheme.albumArtSmall
+                        radius: AppTheme.radiusSmall
+                        color: AppTheme.surfaceElevated
                         
                         Text {
                             anchors.centerIn: parent
                             text: "♫"
-                            font.pixelSize: Theme.fontSizeLarge
-                            color: Theme.textSecondary
+                            font.pixelSize: AppTheme.fontSizeLarge
+                            color: AppTheme.textSecondary
                         }
                         
                         // Play button overlay on hover
                         Rectangle {
                             anchors.fill: parent
-                            radius: Theme.radiusSmall
-                            color: Theme.primary
+                            radius: AppTheme.radiusSmall
+                            color: AppTheme.primary
                             opacity: songMouseArea.containsMouse ? 0.9 : 0
                             
                             Behavior on opacity {
-                                NumberAnimation { duration: Theme.durationFast }
+                                NumberAnimation { duration: AppTheme.durationFast }
                             }
                             
                             Text {
                                 anchors.centerIn: parent
                                 text: "▶"
-                                font.pixelSize: Theme.fontSizeMedium
-                                color: Theme.background
+                                font.pixelSize: AppTheme.fontSizeMedium
+                                color: AppTheme.background
                             }
                         }
                     }
@@ -134,21 +135,21 @@ Item {
                     // Song info
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: Theme.spacing1
+                        spacing: AppTheme.spacing1
                         
                         Text {
                             text: modelData.title
-                            font.pixelSize: Theme.fontSizeBody
+                            font.pixelSize: AppTheme.fontSizeBody
                             font.bold: true
-                            color: Theme.textPrimary
+                            color: AppTheme.textPrimary
                             elide: Text.ElideRight
                             Layout.fillWidth: true
                         }
                         
                         Text {
                             text: modelData.artist
-                            font.pixelSize: Theme.fontSizeSmall
-                            color: Theme.textSecondary
+                            font.pixelSize: AppTheme.fontSizeSmall
+                            color: AppTheme.textSecondary
                             elide: Text.ElideRight
                             Layout.fillWidth: true
                         }
@@ -157,26 +158,26 @@ Item {
                     // Duration placeholder (would use modelData.duration if available)
                     Text {
                         text: modelData.duration || "3:45"
-                        font.pixelSize: Theme.fontSizeSmall
-                        color: Theme.textSecondary
+                        font.pixelSize: AppTheme.fontSizeSmall
+                        color: AppTheme.textSecondary
                     }
                     
                     // More options button
                     Rectangle {
-                        width: Theme.minTouchTarget
-                        height: Theme.minTouchTarget
-                        radius: Theme.radiusRound
-                        color: moreButtonMouse.containsMouse ? Theme.surfaceElevated : "transparent"
+                        width: AppTheme.minTouchTarget
+                        height: AppTheme.minTouchTarget
+                        radius: AppTheme.radiusRound
+                        color: moreButtonMouse.containsMouse ? AppTheme.surfaceElevated : "transparent"
                         
                         Behavior on color {
-                            ColorAnimation { duration: Theme.durationFast }
+                            ColorAnimation { duration: AppTheme.durationFast }
                         }
                         
                         Text {
                             anchors.centerIn: parent
                             text: "⋮"
-                            font.pixelSize: Theme.fontSizeLarge
-                            color: Theme.textPrimary
+                            font.pixelSize: AppTheme.fontSizeLarge
+                            color: AppTheme.textPrimary
                         }
                         
                         MouseArea {
@@ -197,7 +198,7 @@ Item {
                 MouseArea {
                     id: songMouseArea
                     anchors.fill: parent
-                    anchors.rightMargin: Theme.minTouchTarget + Theme.spacing3
+                    anchors.rightMargin: AppTheme.minTouchTarget + AppTheme.spacing3
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: musicController.playSong(modelData.id)
@@ -246,17 +247,17 @@ Item {
         }
 
         background: Rectangle {
-            color: Theme.surface
-            radius: Theme.radiusLarge
+            color: AppTheme.surface
+            radius: AppTheme.radiusLarge
         }
 
         ColumnLayout {
-            spacing: Theme.spacing3
+            spacing: AppTheme.spacing3
             
             Label { 
                 text: "Select Playlist:" 
-                font.pixelSize: Theme.fontSizeBody
-                color: Theme.textPrimary
+                font.pixelSize: AppTheme.fontSizeBody
+                color: AppTheme.textPrimary
             }
             
             Repeater {
@@ -265,14 +266,14 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 44
-                    radius: Theme.radiusMedium
-                    color: playlistMouseArea.containsMouse ? Theme.surfaceHover : Theme.surfaceElevated
+                    radius: AppTheme.radiusMedium
+                    color: playlistMouseArea.containsMouse ? AppTheme.surfaceHover : AppTheme.surfaceElevated
                     
                     Text {
                         anchors.centerIn: parent
                         text: modelData.title
-                        font.pixelSize: Theme.fontSizeBody
-                        color: Theme.textPrimary
+                        font.pixelSize: AppTheme.fontSizeBody
+                        color: AppTheme.textPrimary
                     }
                     
                     MouseArea {
@@ -309,17 +310,17 @@ Item {
         }
 
         background: Rectangle {
-            color: Theme.surface
-            radius: Theme.radiusLarge
+            color: AppTheme.surface
+            radius: AppTheme.radiusLarge
         }
 
         ColumnLayout {
-            spacing: Theme.spacing3
+            spacing: AppTheme.spacing3
             
             Label { 
                 text: "Select Album:" 
-                font.pixelSize: Theme.fontSizeBody
-                color: Theme.textPrimary
+                font.pixelSize: AppTheme.fontSizeBody
+                color: AppTheme.textPrimary
             }
             
             Repeater {
@@ -328,14 +329,14 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 44
-                    radius: Theme.radiusMedium
-                    color: albumMouseArea.containsMouse ? Theme.surfaceHover : Theme.surfaceElevated
+                    radius: AppTheme.radiusMedium
+                    color: albumMouseArea.containsMouse ? AppTheme.surfaceHover : AppTheme.surfaceElevated
                     
                     Text {
                         anchors.centerIn: parent
                         text: modelData.title
-                        font.pixelSize: Theme.fontSizeBody
-                        color: Theme.textPrimary
+                        font.pixelSize: AppTheme.fontSizeBody
+                        color: AppTheme.textPrimary
                     }
                     
                     MouseArea {

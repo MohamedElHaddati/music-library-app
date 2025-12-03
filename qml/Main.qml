@@ -11,76 +11,80 @@ ApplicationWindow {
     visible: true
     title: "Music Manager Pro"
     
-    // Global Dark Theme
+    // Global Dark AppTheme
     Material.theme: Material.Dark
     Material.accent: Material.Green
     
-    color: Theme.background
+    color: AppTheme.background
+
+    // Make stackView accessible to all child components
+    property alias stackView: stackView
 
     // Determine layout mode based on window width
-    readonly property bool useBottomNav: width < Theme.breakpointSmall
-    readonly property bool collapsedSidebar: width < Theme.breakpointMedium && !useBottomNav
+    readonly property bool useBottomNav: width < AppTheme.breakpointSmall
+    readonly property bool collapsedSidebar: width < AppTheme.breakpointMedium && !useBottomNav
     readonly property int currentNavIndex: useBottomNav ? bottomNav.currentIndex : sidebar.currentIndex
     
     // Main layout structure
     Item {
+        id: mainContent
         anchors.fill: parent
         
         // Sidebar for desktop/tablet (hidden on mobile)
         Rectangle {
             id: sidebar
             visible: !useBottomNav
-            width: collapsedSidebar ? Theme.sidebarWidthCollapsed : Theme.sidebarWidthExpanded
+            width: collapsedSidebar ? AppTheme.sidebarWidthCollapsed : AppTheme.sidebarWidthExpanded
             anchors.left: parent.left
             anchors.top: parent.top
-            anchors.bottom: playerFooter.top
-            color: Theme.surface
+            anchors.bottom: parent.bottom
+            color: AppTheme.surface
             
             property int currentIndex: 0
             
             Behavior on width {
-                NumberAnimation { duration: Theme.durationMedium }
+                NumberAnimation { duration: AppTheme.durationMedium }
             }
             
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: Theme.spacing2
-                spacing: Theme.spacing2
+                anchors.margins: AppTheme.spacing2
+                spacing: AppTheme.spacing2
                 
                 // App Logo/Title
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: Theme.headerHeight
+                    Layout.preferredHeight: AppTheme.headerHeight
                     color: "transparent"
                     
                     RowLayout {
                         anchors.fill: parent
-                        anchors.margins: Theme.spacing3
-                        spacing: Theme.spacing3
+                        anchors.margins: AppTheme.spacing3
+                        spacing: AppTheme.spacing3
                         
                         Rectangle {
-                            width: Theme.iconSizeLarge
-                            height: Theme.iconSizeLarge
-                            radius: Theme.radiusSmall
+                            width: AppTheme.iconSizeLarge
+                            height: AppTheme.iconSizeLarge
+                            radius: AppTheme.radiusSmall
                             gradient: Gradient {
-                                GradientStop { position: 0.0; color: Theme.primary }
-                                GradientStop { position: 1.0; color: Theme.primaryHover }
+                                GradientStop { position: 0.0; color: AppTheme.primary }
+                                GradientStop { position: 1.0; color: AppTheme.primaryHover }
                             }
                             
                             Text {
                                 anchors.centerIn: parent
                                 text: "♫"
-                                font.pixelSize: Theme.fontSizeLarge
-                                color: Theme.textPrimary
+                                font.pixelSize: AppTheme.fontSizeLarge
+                                color: AppTheme.textPrimary
                             }
                         }
                         
                         Text {
                             visible: !collapsedSidebar
                             text: "Music Pro"
-                            font.pixelSize: Theme.fontSizeLarge
+                            font.pixelSize: AppTheme.fontSizeLarge
                             font.bold: true
-                            color: Theme.textPrimary
+                            color: AppTheme.textPrimary
                             Layout.fillWidth: true
                         }
                     }
@@ -96,34 +100,34 @@ ApplicationWindow {
                     
                     Rectangle {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: Theme.minTouchTarget
-                        radius: Theme.radiusMedium
-                        color: sidebar.currentIndex === index ? Theme.primary : (navMouseArea.containsMouse ? Theme.surfaceHover : "transparent")
+                        Layout.preferredHeight: AppTheme.minTouchTarget
+                        radius: AppTheme.radiusMedium
+                        color: sidebar.currentIndex === index ? AppTheme.primary : (navMouseArea.containsMouse ? AppTheme.surfaceHover : "transparent")
                         
                         Behavior on color {
-                            ColorAnimation { duration: Theme.durationFast }
+                            ColorAnimation { duration: AppTheme.durationFast }
                         }
                         
                         RowLayout {
                             anchors.fill: parent
-                            anchors.margins: Theme.spacing3
-                            spacing: Theme.spacing3
+                            anchors.margins: AppTheme.spacing3
+                            spacing: AppTheme.spacing3
                             
                             Text {
                                 text: modelData.icon
-                                font.pixelSize: Theme.fontSizeLarge
-                                color: sidebar.currentIndex === index ? Theme.background : Theme.textPrimary
+                                font.pixelSize: AppTheme.fontSizeLarge
+                                color: sidebar.currentIndex === index ? AppTheme.background : AppTheme.textPrimary
                                 Layout.alignment: Qt.AlignVCenter
                                 horizontalAlignment: Text.AlignHCenter
-                                Layout.preferredWidth: Theme.iconSizeMedium
+                                Layout.preferredWidth: AppTheme.iconSizeMedium
                             }
                             
                             Text {
                                 visible: !collapsedSidebar
                                 text: modelData.label
-                                font.pixelSize: Theme.fontSizeBody
+                                font.pixelSize: AppTheme.fontSizeBody
                                 font.bold: sidebar.currentIndex === index
-                                color: sidebar.currentIndex === index ? Theme.background : Theme.textPrimary
+                                color: sidebar.currentIndex === index ? AppTheme.background : AppTheme.textPrimary
                                 Layout.fillWidth: true
                             }
                         }
@@ -133,7 +137,10 @@ ApplicationWindow {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: sidebar.currentIndex = index
+                            onClicked: {
+                                sidebar.currentIndex = index
+                                stackView.clear()
+                            }
                         }
                     }
                 }
@@ -144,11 +151,12 @@ ApplicationWindow {
         
         // Main content area
         Rectangle {
+            id: contentArea
             anchors.left: useBottomNav ? parent.left : sidebar.right
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.bottom: useBottomNav ? bottomNav.top : playerFooter.top
-            color: Theme.background
+            anchors.bottom: useBottomNav ? bottomNav.top : parent.bottom
+            color: AppTheme.background
             
             ColumnLayout {
                 anchors.fill: parent
@@ -157,19 +165,43 @@ ApplicationWindow {
                 // Modern header with search
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: Theme.headerHeight
-                    color: Theme.surface
+                    Layout.preferredHeight: AppTheme.headerHeight
+                    color: AppTheme.surface
                     
                     RowLayout {
                         anchors.fill: parent
-                        anchors.margins: Theme.spacing4
-                        spacing: Theme.spacing4
+                        anchors.margins: AppTheme.spacing4
+                        spacing: AppTheme.spacing4
+                        
+                        // Back button (visible when stack has items)
+                        Rectangle {
+                            visible: stackView.depth > 0
+                            width: 40
+                            height: 40
+                            radius: 20
+                            color: backMouseArea.containsMouse ? AppTheme.surfaceElevated : "transparent"
+                            
+                            Text {
+                                anchors.centerIn: parent
+                                text: "←"
+                                font.pixelSize: AppTheme.fontSizeLarge
+                                color: AppTheme.textPrimary
+                            }
+                            
+                            MouseArea {
+                                id: backMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: stackView.pop()
+                            }
+                        }
                         
                         Text {
                             text: ["Songs", "Albums", "Playlists"][currentNavIndex] || "Library"
-                            font.pixelSize: Theme.fontSizeXLarge
+                            font.pixelSize: AppTheme.fontSizeXLarge
                             font.bold: true
-                            color: Theme.textPrimary
+                            color: AppTheme.textPrimary
                             Layout.fillWidth: true
                         }
                         
@@ -177,27 +209,27 @@ ApplicationWindow {
                         Rectangle {
                             Layout.preferredWidth: 300
                             Layout.preferredHeight: 40
-                            radius: Theme.radiusRound
-                            color: Theme.surfaceElevated
+                            radius: AppTheme.radiusRound
+                            color: AppTheme.surfaceElevated
                             
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.margins: Theme.spacing2
-                                spacing: Theme.spacing2
+                                anchors.margins: AppTheme.spacing2
+                                spacing: AppTheme.spacing2
                                 
                                 Text {
                                     text: "🔍"
-                                    font.pixelSize: Theme.fontSizeMedium
-                                    color: Theme.textSecondary
+                                    font.pixelSize: AppTheme.fontSizeMedium
+                                    color: AppTheme.textSecondary
                                 }
                                 
                                 TextField {
                                     id: searchField
                                     Layout.fillWidth: true
                                     placeholderText: "Search..."
-                                    color: Theme.textPrimary
+                                    color: AppTheme.textPrimary
                                     background: Rectangle { color: "transparent" }
-                                    font.pixelSize: Theme.fontSizeBody
+                                    font.pixelSize: AppTheme.fontSizeBody
                                     onTextChanged: {
                                         if (currentNavIndex === 0) {
                                             songList.refresh(text)
@@ -211,15 +243,15 @@ ApplicationWindow {
                         Rectangle {
                             width: 40
                             height: 40
-                            radius: Theme.radiusRound
-                            color: Theme.primary
+                            radius: AppTheme.radiusRound
+                            color: AppTheme.primary
                             
                             Text {
                                 anchors.centerIn: parent
                                 text: "U"
-                                font.pixelSize: Theme.fontSizeMedium
+                                font.pixelSize: AppTheme.fontSizeMedium
                                 font.bold: true
-                                color: Theme.background
+                                color: AppTheme.background
                             }
                         }
                     }
@@ -231,10 +263,55 @@ ApplicationWindow {
                     currentIndex: currentNavIndex
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    visible: stackView.depth === 0
                     
                     SongList { id: songList }
                     AlbumList { id: albumList }
                     PlaylistList { id: playlistList }
+                }
+                
+                // Stack view for detail pages
+                StackView {
+                    id: stackView
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    visible: depth > 0
+                    
+                    pushEnter: Transition {
+                        PropertyAnimation {
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: AppTheme.durationMedium
+                        }
+                    }
+                    
+                    pushExit: Transition {
+                        PropertyAnimation {
+                            property: "opacity"
+                            from: 1
+                            to: 0
+                            duration: AppTheme.durationMedium
+                        }
+                    }
+                    
+                    popEnter: Transition {
+                        PropertyAnimation {
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: AppTheme.durationMedium
+                        }
+                    }
+                    
+                    popExit: Transition {
+                        PropertyAnimation {
+                            property: "opacity"
+                            from: 1
+                            to: 0
+                            duration: AppTheme.durationMedium
+                        }
+                    }
                 }
             }
         }
@@ -245,9 +322,9 @@ ApplicationWindow {
             visible: useBottomNav
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: playerFooter.top
-            height: Theme.headerHeight
-            color: Theme.surface
+            anchors.bottom: parent.bottom
+            height: AppTheme.headerHeight
+            color: AppTheme.surface
             
             property int currentIndex: 0
             
@@ -265,89 +342,36 @@ ApplicationWindow {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        color: bottomNav.currentIndex === index ? Theme.surfaceElevated : "transparent"
+                        color: bottomNav.currentIndex === index ? AppTheme.surfaceElevated : "transparent"
                         
                         ColumnLayout {
                             anchors.centerIn: parent
-                            spacing: Theme.spacing1
+                            spacing: AppTheme.spacing1
                             
                             Text {
                                 text: modelData.icon
-                                font.pixelSize: Theme.fontSizeLarge
-                                color: bottomNav.currentIndex === index ? Theme.primary : Theme.textSecondary
+                                font.pixelSize: AppTheme.fontSizeLarge
+                                color: bottomNav.currentIndex === index ? AppTheme.primary : AppTheme.textSecondary
                                 Layout.alignment: Qt.AlignHCenter
                             }
                             
                             Text {
                                 text: modelData.label
-                                font.pixelSize: Theme.fontSizeXSmall
-                                color: bottomNav.currentIndex === index ? Theme.primary : Theme.textSecondary
+                                font.pixelSize: AppTheme.fontSizeXSmall
+                                color: bottomNav.currentIndex === index ? AppTheme.primary : AppTheme.textSecondary
                                 Layout.alignment: Qt.AlignHCenter
                             }
                         }
                         
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: bottomNav.currentIndex = index
+                            onClicked: {
+                                bottomNav.currentIndex = index
+                                stackView.clear()
+                            }
                         }
                     }
                 }
-            }
-        }
-    }
-    
-    // Stack view for detail pages
-    StackView {
-        id: stackView
-        anchors.fill: parent
-        initialItem: null
-        
-        // Smooth page transitions
-        pushEnter: Transition {
-            PropertyAnimation {
-                property: "opacity"
-                from: 0
-                to: 1
-                duration: Theme.durationMedium
-            }
-            PropertyAnimation {
-                property: "x"
-                from: stackView.width
-                to: 0
-                duration: Theme.durationMedium
-            }
-        }
-        
-        pushExit: Transition {
-            PropertyAnimation {
-                property: "opacity"
-                from: 1
-                to: 0
-                duration: Theme.durationMedium
-            }
-        }
-        
-        popEnter: Transition {
-            PropertyAnimation {
-                property: "opacity"
-                from: 0
-                to: 1
-                duration: Theme.durationMedium
-            }
-        }
-        
-        popExit: Transition {
-            PropertyAnimation {
-                property: "opacity"
-                from: 1
-                to: 0
-                duration: Theme.durationMedium
-            }
-            PropertyAnimation {
-                property: "x"
-                from: 0
-                to: stackView.width
-                duration: Theme.durationMedium
             }
         }
     }

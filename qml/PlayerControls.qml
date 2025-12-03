@@ -6,8 +6,8 @@ import MusicManager
 
 Rectangle {
     id: root
-    height: Theme.playerControlsHeight
-    color: Theme.surface
+    height: AppTheme.playerControlsHeight
+    color: AppTheme.surface
     
     property var currentSong: musicController.getCurrentSong()
     
@@ -40,12 +40,12 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 4
-            color: Theme.surfaceElevated
+            color: AppTheme.surfaceElevated
             
             Rectangle {
                 width: parent.width * (player.duration > 0 ? player.position / player.duration : 0)
                 height: parent.height
-                color: Theme.primary
+                color: AppTheme.primary
                 
                 Behavior on width {
                     NumberAnimation { duration: 100 }
@@ -66,45 +66,45 @@ Rectangle {
         RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.margins: Theme.spacing3
-            spacing: Theme.spacing4
+            Layout.margins: AppTheme.spacing3
+            spacing: AppTheme.spacing4
             
             // Left: Current song info with album art
             RowLayout {
                 Layout.preferredWidth: 250
-                spacing: Theme.spacing3
+                spacing: AppTheme.spacing3
                 
                 // Album artwork thumbnail
                 Rectangle {
                     width: 56
                     height: 56
-                    radius: Theme.radiusSmall
-                    color: Theme.surfaceElevated
+                    radius: AppTheme.radiusSmall
+                    color: AppTheme.surfaceElevated
                     
                     Text {
                         anchors.centerIn: parent
                         text: "♫"
-                        font.pixelSize: Theme.fontSizeLarge
-                        color: Theme.textSecondary
+                        font.pixelSize: AppTheme.fontSizeLarge
+                        color: AppTheme.textSecondary
                     }
                 }
                 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: Theme.spacing1
+                    spacing: AppTheme.spacing1
                     
                     Text { 
                         text: root.currentSong.title || "No song playing"
-                        font.pixelSize: Theme.fontSizeBody
+                        font.pixelSize: AppTheme.fontSizeBody
                         font.bold: true 
-                        color: Theme.textPrimary
+                        color: AppTheme.textPrimary
                         elide: Text.ElideRight
                         Layout.fillWidth: true
                     }
                     Text { 
                         text: root.currentSong.artist || "---"
-                        font.pixelSize: Theme.fontSizeSmall
-                        color: Theme.textSecondary
+                        font.pixelSize: AppTheme.fontSizeSmall
+                        color: AppTheme.textSecondary
                         elide: Text.ElideRight
                         Layout.fillWidth: true
                     }
@@ -116,28 +116,28 @@ Rectangle {
             // Center: Playback controls
             ColumnLayout {
                 Layout.alignment: Qt.AlignHCenter
-                spacing: Theme.spacing2
+                spacing: AppTheme.spacing2
                 
                 RowLayout {
                     Layout.alignment: Qt.AlignHCenter
-                    spacing: Theme.spacing3
+                    spacing: AppTheme.spacing3
                     
                     // Previous button
                     Rectangle {
-                        width: Theme.minTouchTarget - 8
-                        height: Theme.minTouchTarget - 8
+                        width: AppTheme.minTouchTarget - 8
+                        height: AppTheme.minTouchTarget - 8
                         radius: width / 2
-                        color: prevMouseArea.containsMouse ? Theme.surfaceElevated : "transparent"
+                        color: prevMouseArea.containsMouse ? AppTheme.surfaceElevated : "transparent"
                         
                         Behavior on color {
-                            ColorAnimation { duration: Theme.durationFast }
+                            ColorAnimation { duration: AppTheme.durationFast }
                         }
                         
                         Text {
                             anchors.centerIn: parent
                             text: "⏮"
-                            font.pixelSize: Theme.fontSizeMedium
-                            color: Theme.textPrimary
+                            font.pixelSize: AppTheme.fontSizeMedium
+                            color: AppTheme.textPrimary
                         }
                         
                         MouseArea {
@@ -151,19 +151,19 @@ Rectangle {
                     
                     // Play/Pause button (larger, primary)
                     Rectangle {
-                        width: Theme.minTouchTarget + 8
-                        height: Theme.minTouchTarget + 8
+                        width: AppTheme.minTouchTarget + 8
+                        height: AppTheme.minTouchTarget + 8
                         radius: width / 2
-                        color: Theme.primary
+                        color: AppTheme.primary
                         enabled: root.currentSong.hasSong
                         opacity: enabled ? (playMouseArea.pressed ? 0.8 : 1) : 0.5
                         
                         Behavior on opacity {
-                            NumberAnimation { duration: Theme.durationFast }
+                            NumberAnimation { duration: AppTheme.durationFast }
                         }
                         
                         Behavior on scale {
-                            NumberAnimation { duration: Theme.durationFast }
+                            NumberAnimation { duration: AppTheme.durationFast }
                         }
                         
                         scale: playMouseArea.containsMouse ? 1.1 : 1.0
@@ -171,8 +171,8 @@ Rectangle {
                         Text {
                             anchors.centerIn: parent
                             text: player.playbackState === MediaPlayer.PlayingState ? "⏸" : "▶"
-                            font.pixelSize: Theme.fontSizeLarge
-                            color: Theme.background
+                            font.pixelSize: AppTheme.fontSizeLarge
+                            color: AppTheme.background
                         }
                         
                         MouseArea {
@@ -191,20 +191,20 @@ Rectangle {
                     
                     // Next button
                     Rectangle {
-                        width: Theme.minTouchTarget - 8
-                        height: Theme.minTouchTarget - 8
+                        width: AppTheme.minTouchTarget - 8
+                        height: AppTheme.minTouchTarget - 8
                         radius: width / 2
-                        color: nextMouseArea.containsMouse ? Theme.surfaceElevated : "transparent"
+                        color: nextMouseArea.containsMouse ? AppTheme.surfaceElevated : "transparent"
                         
                         Behavior on color {
-                            ColorAnimation { duration: Theme.durationFast }
+                            ColorAnimation { duration: AppTheme.durationFast }
                         }
                         
                         Text {
                             anchors.centerIn: parent
                             text: "⏭"
-                            font.pixelSize: Theme.fontSizeMedium
-                            color: Theme.textPrimary
+                            font.pixelSize: AppTheme.fontSizeMedium
+                            color: AppTheme.textPrimary
                         }
                         
                         MouseArea {
@@ -220,24 +220,24 @@ Rectangle {
                 // Time indicators
                 RowLayout {
                     Layout.alignment: Qt.AlignHCenter
-                    spacing: Theme.spacing2
+                    spacing: AppTheme.spacing2
                     
                     Text {
                         text: formatTime(player.position)
-                        font.pixelSize: Theme.fontSizeXSmall
-                        color: Theme.textSecondary
+                        font.pixelSize: AppTheme.fontSizeXSmall
+                        color: AppTheme.textSecondary
                     }
                     
                     Text {
                         text: "/"
-                        font.pixelSize: Theme.fontSizeXSmall
-                        color: Theme.textSecondary
+                        font.pixelSize: AppTheme.fontSizeXSmall
+                        color: AppTheme.textSecondary
                     }
                     
                     Text {
                         text: formatTime(player.duration)
-                        font.pixelSize: Theme.fontSizeXSmall
-                        color: Theme.textSecondary
+                        font.pixelSize: AppTheme.fontSizeXSmall
+                        color: AppTheme.textSecondary
                     }
                 }
             }
@@ -248,13 +248,13 @@ Rectangle {
             RowLayout {
                 Layout.preferredWidth: 250
                 Layout.alignment: Qt.AlignRight
-                spacing: Theme.spacing3
+                spacing: AppTheme.spacing3
                 
                 // Volume icon
                 Text {
                     text: player.audioOutput.volume > 0.5 ? "🔊" : (player.audioOutput.volume > 0 ? "🔉" : "🔇")
-                    font.pixelSize: Theme.fontSizeMedium
-                    color: Theme.textSecondary
+                    font.pixelSize: AppTheme.fontSizeMedium
+                    color: AppTheme.textSecondary
                 }
                 
                 // Volume slider
@@ -269,13 +269,13 @@ Rectangle {
                         width: parent.availableWidth
                         height: 4
                         radius: 2
-                        color: Theme.surfaceElevated
+                        color: AppTheme.surfaceElevated
                         
                         Rectangle {
                             width: parent.width * parent.parent.visualPosition
                             height: parent.height
                             radius: 2
-                            color: Theme.primary
+                            color: AppTheme.primary
                         }
                     }
                     
@@ -285,8 +285,8 @@ Rectangle {
                         width: 12
                         height: 12
                         radius: 6
-                        color: Theme.primary
-                        border.color: Theme.textPrimary
+                        color: AppTheme.primary
+                        border.color: AppTheme.textPrimary
                         border.width: 1
                     }
                 }

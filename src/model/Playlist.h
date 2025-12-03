@@ -9,10 +9,10 @@ public:
     Playlist();
     Playlist(int id, const QString& title);
 
-    int getId() const;
+    int getId() const { return m_id; }
     void setId(int id);
 
-    QString getTitle() const;
+    QString getTitle() const { return m_title; }
     void setTitle(const QString& title);
 
 private:

@@ -9,7 +9,7 @@ Page {
     property string playlistTitle: ""
     
     background: Rectangle {
-        color: Theme.background
+        color: AppTheme.background
     }
 
     ColumnLayout {
@@ -23,82 +23,50 @@ Page {
             
             gradient: Gradient {
                 GradientStop { position: 0.0; color: "#6b46c1" }
-                GradientStop { position: 1.0; color: Theme.background }
+                GradientStop { position: 1.0; color: "#1a1a1a" }
             }
             
             RowLayout {
                 anchors.fill: parent
-                anchors.margins: Theme.spacing6
-                spacing: Theme.spacing6
+                anchors.margins: AppTheme.spacing6
+                spacing: AppTheme.spacing5
                 
-                // Large playlist artwork
+                // Playlist artwork
                 Rectangle {
                     Layout.preferredWidth: 200
                     Layout.preferredHeight: 200
-                    radius: Theme.radiusLarge
-                    
-                    gradient: Gradient {
-                        GradientStop { position: 0.0; color: "#e94560" }
-                        GradientStop { position: 1.0; color: "#6b46c1" }
-                    }
-                    
-                    // Shadow effect
-                    layer.enabled: true
-                    layer.effect: Item {
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: -Theme.spacing3
-                            radius: Theme.radiusLarge
-                            color: "black"
-                            opacity: Theme.shadowOpacityLarge
-                            z: -1
-                        }
-                    }
+                    Layout.alignment: Qt.AlignVCenter
+                    radius: AppTheme.radiusMedium
+                    color: AppTheme.surface
                     
                     Text {
                         anchors.centerIn: parent
-                        text: "♫"
-                        font.pixelSize: Theme.fontSizeXXXLarge + 24
-                        color: Theme.textPrimary
+                        text: "🎵"
+                        font.pixelSize: 80
                     }
                 }
                 
                 // Playlist info
                 ColumnLayout {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    spacing: Theme.spacing3
-                    
-                    Item { Layout.fillHeight: true }
+                    Layout.alignment: Qt.AlignVCenter
+                    spacing: AppTheme.spacing3
                     
                     Text {
                         text: "PLAYLIST"
-                        font.pixelSize: Theme.fontSizeSmall
+                        font.pixelSize: AppTheme.fontSizeSmall
                         font.bold: true
-                        color: Theme.textPrimary
-                        opacity: 0.7
+                        color: AppTheme.textSecondary
                     }
                     
                     Text {
                         text: root.playlistTitle
-                        font.pixelSize: Theme.fontSizeXXXLarge
+                        font.pixelSize: 48
                         font.bold: true
-                        color: Theme.textPrimary
+                        color: AppTheme.textPrimary
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
                     }
-                    
-                    RowLayout {
-                        spacing: Theme.spacing2
-                        
-                        Text {
-                            text: musicController.getPlaylistSongs(root.playlistId).length + " songs"
-                            font.pixelSize: Theme.fontSizeBody
-                            color: Theme.textSecondary
-                        }
-                    }
-                    
-                    Item { Layout.fillHeight: true }
                 }
             }
             
@@ -106,78 +74,57 @@ Page {
             Rectangle {
                 anchors.top: parent.top
                 anchors.left: parent.left
-                anchors.margins: Theme.spacing3
-                width: Theme.minTouchTarget
-                height: Theme.minTouchTarget
-                radius: Theme.radiusRound
-                color: Theme.background
-                opacity: backMouseArea.containsMouse ? 0.9 : 0.7
-                
-                Behavior on opacity {
-                    NumberAnimation { duration: Theme.durationFast }
-                }
+                anchors.margins: AppTheme.spacing4
+                width: 40
+                height: 40
+                radius: 20
+                color: "#80000000"
                 
                 Text {
                     anchors.centerIn: parent
                     text: "←"
-                    font.pixelSize: Theme.fontSizeLarge
-                    color: Theme.textPrimary
+                    font.pixelSize: AppTheme.fontSizeLarge
+                    color: AppTheme.textPrimary
                 }
                 
                 MouseArea {
-                    id: backMouseArea
                     anchors.fill: parent
-                    hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: stackView.pop()
+                    onClicked: {
+                        if (root.StackView.view) {
+                            root.StackView.view.pop()
+                        }
+                    }
                 }
             }
             
             // Play playlist button
             Rectangle {
-                anchors.top: parent.top
+                anchors.bottom: parent.bottom
                 anchors.right: parent.right
-                anchors.margins: Theme.spacing3
-                width: 150
-                height: Theme.minTouchTarget
-                radius: Theme.radiusRound
-                color: Theme.primary
-                opacity: playPlaylistMouseArea.pressed ? 0.8 : 1
+                anchors.margins: AppTheme.spacing4
+                width: 56
+                height: 56
+                radius: 28
+                color: AppTheme.primary
                 
-                Behavior on opacity {
-                    NumberAnimation { duration: Theme.durationFast }
-                }
-                
-                Behavior on scale {
-                    NumberAnimation { duration: Theme.durationFast }
-                }
-                
-                scale: playPlaylistMouseArea.containsMouse ? 1.05 : 1.0
-                
-                RowLayout {
+                Text {
                     anchors.centerIn: parent
-                    spacing: Theme.spacing2
-                    
-                    Text {
-                        text: "▶"
-                        font.pixelSize: Theme.fontSizeMedium
-                        color: Theme.background
-                    }
-                    
-                    Text {
-                        text: "Play Playlist"
-                        font.pixelSize: Theme.fontSizeBody
-                        font.bold: true
-                        color: Theme.background
-                    }
+                    text: "▶"
+                    font.pixelSize: AppTheme.fontSizeLarge
+                    color: AppTheme.textPrimary
                 }
                 
                 MouseArea {
-                    id: playPlaylistMouseArea
                     anchors.fill: parent
-                    hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: musicController.playPlaylist(root.playlistId)
+                    onClicked: {
+                        // Play first song in playlist
+                        var songs = musicController.getSongsByPlaylist(root.playlistId)
+                        if (songs.length > 0) {
+                            musicController.playSong(songs[0].id)
+                        }
+                    }
                 }
             }
         }
@@ -186,84 +133,79 @@ Page {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: Theme.background
+            color: AppTheme.background
             
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: Theme.spacing4
-                spacing: Theme.spacing3
+                anchors.margins: AppTheme.spacing5
+                spacing: AppTheme.spacing4
                 
                 Text {
-                    text: "Tracks"
-                    font.pixelSize: Theme.fontSizeLarge
+                    text: "Songs"
+                    font.pixelSize: AppTheme.fontSizeXLarge
                     font.bold: true
-                    color: Theme.textPrimary
+                    color: AppTheme.textPrimary
                 }
                 
                 ListView {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    model: musicController.getPlaylistSongs(root.playlistId)
+                    spacing: AppTheme.spacing2
                     clip: true
-                    spacing: Theme.spacing2
+                    
+                    model: musicController.getSongsByPlaylist(root.playlistId)
                     
                     delegate: Rectangle {
                         width: ListView.view.width
                         height: 60
-                        radius: Theme.radiusMedium
-                        color: trackMouseArea.containsMouse ? Theme.surfaceHover : Theme.surface
-                        
-                        Behavior on color {
-                            ColorAnimation { duration: Theme.durationFast }
-                        }
+                        radius: AppTheme.radiusMedium
+                        color: mouseArea.containsMouse ? AppTheme.surfaceHover : "transparent"
                         
                         RowLayout {
                             anchors.fill: parent
-                            anchors.margins: Theme.spacing3
-                            spacing: Theme.spacing3
+                            anchors.margins: AppTheme.spacing3
+                            spacing: AppTheme.spacing3
                             
-                            // Track number
                             Text {
                                 text: (index + 1).toString()
-                                font.pixelSize: Theme.fontSizeBody
-                                color: Theme.textSecondary
+                                font.pixelSize: AppTheme.fontSizeMedium
+                                color: AppTheme.textSecondary
                                 Layout.preferredWidth: 30
                                 horizontalAlignment: Text.AlignRight
                             }
                             
-                            // Track info
                             ColumnLayout {
                                 Layout.fillWidth: true
-                                spacing: Theme.spacing1
+                                spacing: 4
                                 
                                 Text {
                                     text: modelData.title
-                                    font.pixelSize: Theme.fontSizeBody
-                                    font.bold: true
-                                    color: Theme.textPrimary
+                                    font.pixelSize: AppTheme.fontSizeMedium
+                                    color: AppTheme.textPrimary
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true
                                 }
                                 
                                 Text {
                                     text: modelData.artist
-                                    font.pixelSize: Theme.fontSizeSmall
-                                    color: Theme.textSecondary
+                                    font.pixelSize: AppTheme.fontSizeSmall
+                                    color: AppTheme.textSecondary
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true
                                 }
                             }
                             
-                            // Duration (would use modelData.duration if available)
                             Text {
-                                text: modelData.duration || "3:45"
-                                font.pixelSize: Theme.fontSizeSmall
-                                color: Theme.textSecondary
+                                text: Math.floor(modelData.duration / 60) + ":" + 
+                                      (modelData.duration % 60 < 10 ? "0" : "") + 
+                                      (modelData.duration % 60)
+                                font.pixelSize: AppTheme.fontSizeSmall
+                                color: AppTheme.textSecondary
                             }
                         }
                         
                         MouseArea {
-                            id: trackMouseArea
+                            id: mouseArea
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor

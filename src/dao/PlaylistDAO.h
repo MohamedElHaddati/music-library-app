@@ -7,10 +7,14 @@
 class PlaylistDAO {
 public:
     PlaylistDAO();
+    
+    bool addPlaylist(const Playlist& playlist);
     std::vector<Playlist> getAllPlaylists();
-    bool addPlaylist(const QString& title);
+    Playlist getPlaylist(int id);
+    bool deletePlaylist(int id);
     bool addSongToPlaylist(int playlistId, int songId);
-    std::vector<int> getSongIds(int playlistId);
+    bool removeSongFromPlaylist(int playlistId, int songId);
+    std::vector<int> getSongIds(int playlistId);  // Add this line
 };
 
 #endif // PLAYLISTDAO_H

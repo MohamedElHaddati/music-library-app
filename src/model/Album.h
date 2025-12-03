@@ -10,9 +10,9 @@ public:
     Album();
     Album(int id, const QString& title, const QString& coverPath = "");
 
-    int getId() const;
-    QString getTitle() const;
-    QString getCoverPath() const;
+    int getId() const { return m_id; }
+    QString getTitle() const { return m_title; }
+    QString getCoverPath() const { return m_coverPath; }
 
     void setId(int id);
     void setTitle(const QString& title);
